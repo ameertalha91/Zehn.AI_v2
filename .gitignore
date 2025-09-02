@@ -1,0 +1,31 @@
+# Environment variables - these contain your OpenAI API key
+.env
+.env.local
+.env*.local
+
+# Dependencies folder - huge and can be reinstalled
+/node_modules
+
+# Next.js build output
+/.next/
+/out/
+/build
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local IDE files
+.vscode/
+.idea/
+
+# misc
+.DS_Store
+*.pem
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+.vscode/
+```

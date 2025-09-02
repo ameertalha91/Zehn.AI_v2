@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h2>Test Pakistan Studies API</h2>
+    <button onclick="testAPI()">Test Question</button>
+    <div id="result"></div>
+
+    <script>
+    async function testAPI() {
+        const response = await fetch('http://localhost:3000/api/ai', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                message: "Discuss the major causes of the creation of Pakistan" 
+            })
+        });
+        
+        const data = await response.json();
+        document.getElementById('result').innerHTML = data.response;
+    }
+    </script>
+</body>
+</html>

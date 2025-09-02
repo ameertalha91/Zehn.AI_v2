@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String       @id @default(cuid())
+  email     String       @unique
+  name      String
+  role      Role
+  centerId  String? // if tutor or admin
+  classes   Enrollment[]
+  messages  Message[]
+  createdAt DateTime     @default(now())
+  Center    Center?      @relation(fields: [centerId], references: [id])
+}
+
+model Center {
+  id        String   @id @default(cuid())
+  name      String
+  tutors    User[]
+  classes   Class[]
+  createdAt DateTime @default(now())
+}
+
+model Class {
+  id        String       @id @default(cuid())
+  name      String
+  centerId  String
+  center    Center       @relation(fields: [centerId], references: [id])
+  lectures  Lecture[]
+  quizzes   Quiz[]
+  students  Enrollment[]
+  messages  Message[]
+  createdAt DateTime     @default(now())
+}
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  userId    String
+  classId   String
+  user      User     @relation(fields: [userId], references: [id])
+  klass     Class    @relation(fields: [classId], references: [id])
+  role      String // "student" or "tutor"
+  createdAt DateTime @default(now())
+}
+
+model Lecture {
+  id         String   @id @default(cuid())
+  classId    String
+  klass      Class    @relation(fields: [classId], references: [id])
+  title      String
+  videoUrl   String?
+  transcript String?
+  createdAt  DateTime @default(now())
+}
+
+model Quiz {
+  id          String   @id @default(cuid())
+  videoId     String
+  video       Video    @relation(fields: [videoId], references: [id])
+  questions   Json     // Stores array of questions
+  timeMarker  Int
+  createdAt   DateTime @default(now())
+}
+
+model Question {
+  id        String @id @default(cuid())
+  quizId    String
+  quiz      Quiz   @relation(fields: [quizId], references: [id])
+  prompt    String
+  options   String // JSON string
+  answerIdx Int
+}
+
+model MockExam {
+  id        String     @id @default(cuid())
+  userId    String
+  classId   String?
+  url       String // uploaded file path
+  feedbacks Feedback[]
+  createdAt DateTime   @default(now())
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  mockId    String
+  mock      MockExam @relation(fields: [mockId], references: [id])
+  tutorId   String?
+  rubric    String // JSON summary of scores
+  comments  String?
+  createdAt DateTime @default(now())
+}
+
+model StudyPlan {
+  id        String   @id @default(cuid())
+  userId    String
+  weeks     Int
+  targets   String // JSON of tasks by week
+  createdAt DateTime @default(now())
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  classId   String
+  authorId  String
+  body      String
+  createdAt DateTime @default(now())
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  Class     Class    @relation(fields: [classId], references: [id])
+}
+
+model Video {
+  id          String    @id @default(cuid())
+  youtubeId   String    @unique
+  title       String
+  keywords    String[]
+  quizzes     Quiz[]
+  createdAt   DateTime  @default(now())
+}
+
+model SampleQuestion {
+  id          String   @id @default(cuid())
+  question    String
+  options     String[]
+  correct     Int
+  keywords    String[]
+  category    String
+}
+
+enum Role {
+  STUDENT
+  TUTOR
+  ADMIN
+}
+  timeMarker Int // Time in seconds when quiz should appear
+  questions  Json // Store pre-generated questions
+  createdAt  DateTime @default(now())
+}
+
+enum Role {
+  STUDENT
+  TUTOR
+  ADMIN
+}
