@@ -4,8 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import YouTube from 'react-youtube';
 import { Play, Pause, Volume2, VolumeX, Clock, Brain, CheckCircle, XCircle, SkipForward } from 'lucide-react';
 
-const VideoQuizComponent = () => {
-  const videoId = 'vxCnkM48zPY'; // Extracted from your YouTube URL
+const VideoQuizComponent = ({ videoId = 'vxCnkM48zPY' }: { videoId?: string }) => {
   const [player, setPlayer] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
