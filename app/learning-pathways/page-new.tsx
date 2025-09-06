@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { NewsIcon, EditIcon, BookIcon, VideoIcon, BrainIcon, GlobeIcon, PenIcon, BeakerIcon, ClockIcon, ScrollIcon, MosqueIcon, GraduationCapIcon } from '@/components/Icons';
 
 interface LearningPathway {
   id: string;
@@ -9,7 +8,7 @@ interface LearningPathway {
   videoCount: number;
   duration: string;
   difficulty: string;
-  icon: React.ReactNode;
+  icon: string;
 }
 
 export default function LearningPathways() {
@@ -32,7 +31,7 @@ export default function LearningPathways() {
       videoCount: 8,
       duration: '32 hours',
       difficulty: 'Advanced',
-      icon: <GlobeIcon className="w-6 h-6" />,
+      icon: '🌍'
     },
     {
       id: 'current-affairs',
@@ -42,7 +41,7 @@ export default function LearningPathways() {
       videoCount: 15,
       duration: '25 hours',
       difficulty: 'Intermediate',
-      icon: <NewsIcon className="w-6 h-6" />,
+      icon: '📰'
     },
     {
       id: 'islamic-studies',
@@ -52,7 +51,7 @@ export default function LearningPathways() {
       videoCount: 10,
       duration: '30 hours',
       difficulty: 'Intermediate',
-      icon: <MosqueIcon className="w-6 h-6" />,
+      icon: '🕌'
     },
     {
       id: 'english-essay',
@@ -62,7 +61,7 @@ export default function LearningPathways() {
       videoCount: 6,
       duration: '18 hours',
       difficulty: 'Intermediate',
-      icon: <PenIcon className="w-6 h-6" />,
+      icon: '✍️'
     },
     {
       id: 'english-precis',
@@ -72,7 +71,7 @@ export default function LearningPathways() {
       videoCount: 5,
       duration: '15 hours',
       difficulty: 'Intermediate',
-      icon: <EditIcon className="w-6 h-6" />,
+      icon: '📝'
     },
     {
       id: 'general-science',
@@ -82,7 +81,7 @@ export default function LearningPathways() {
       videoCount: 8,
       duration: '24 hours',
       difficulty: 'Beginner',
-      icon: <BeakerIcon className="w-6 h-6" />,
+      icon: '🔬'
     },
     {
       id: 'urdu',
@@ -92,14 +91,14 @@ export default function LearningPathways() {
       videoCount: 4,
       duration: '12 hours',
       difficulty: 'Beginner',
-      icon: <ScrollIcon className="w-6 h-6" />,
+      icon: '🇺🇷'
     }
   ];
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'Beginner': return 'text-green-600 bg-green-100';
-      case 'Intermediate': return 'text-teal-600 bg-teal-100';
+      case 'Intermediate': return 'text-blue-600 bg-blue-100';
       case 'Advanced': return 'text-purple-600 bg-purple-100';
       default: return 'text-gray-600 bg-gray-100';
     }
@@ -107,7 +106,7 @@ export default function LearningPathways() {
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'Core Subject': return 'text-teal-600 bg-teal-100';
+      case 'Core Subject': return 'text-red-600 bg-red-100';
       case 'Compulsory Subject': return 'text-blue-600 bg-blue-100';
       default: return 'text-gray-600 bg-gray-100';
     }
@@ -120,25 +119,22 @@ export default function LearningPathways() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-teal-900 text-white py-20">
+      <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 text-white py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl">
-            <h1 className="text-5xl font-bold mb-6 flex items-center gap-4">
-              <BookIcon className="w-12 h-12 text-teal-400" />
-              CSS COURSE CATALOG
+            <h1 className="text-5xl font-bold mb-6">
+              🎯 CSS Course Catalog
             </h1>
-            <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+            <p className="text-xl text-blue-100 mb-8 leading-relaxed">
               Complete course catalog for CSS examination preparation. Each subject includes comprehensive video lectures, 
               interactive quizzes, and AI-powered learning assistance organized by CSS syllabus structure.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link href="/cognitive-assistant" className="bg-teal-600 hover:bg-teal-500 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2">
-                <BrainIcon className="w-5 h-5" />
-                Cognitive Assistant
+              <Link href="/cognitive-assistant" className="bg-white text-blue-900 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+                🤖 Cognitive Assistant
               </Link>
-              <Link href="/educator-center" className="border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 px-6 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2">
-                <GraduationCapIcon className="w-5 h-5" />
-                Educator Center
+              <Link href="/educator-center" className="border border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors">
+                👨‍🏫 Educator Center
               </Link>
             </div>
           </div>
@@ -148,25 +144,25 @@ export default function LearningPathways() {
       <div className="container mx-auto px-6 py-12">
         {/* Statistics */}
         <div className="grid md:grid-cols-4 gap-6 mb-12">
-          <div className="bg-white p-6 rounded-xl shadow-sm text-center border border-gray-200">
-            <div className="text-3xl font-bold text-teal-600 mb-2">{pathways.length}</div>
-            <div className="text-gray-600 font-medium">CSS Subjects</div>
+          <div className="bg-white p-6 rounded-lg shadow-sm text-center">
+            <div className="text-3xl font-bold text-blue-600 mb-2">{pathways.length}</div>
+            <div className="text-gray-600">CSS Subjects</div>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-sm text-center border border-gray-200">
+          <div className="bg-white p-6 rounded-lg shadow-sm text-center">
             <div className="text-3xl font-bold text-green-600 mb-2">
               {pathways.reduce((sum, p) => sum + p.videoCount, 0)}
             </div>
-            <div className="text-gray-600 font-medium">Video Lectures</div>
+            <div className="text-gray-600">Video Lectures</div>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-sm text-center border border-gray-200">
+          <div className="bg-white p-6 rounded-lg shadow-sm text-center">
             <div className="text-3xl font-bold text-purple-600 mb-2">
               {pathways.reduce((sum, p) => sum + parseInt(p.duration), 0)}h
             </div>
-            <div className="text-gray-600 font-medium">Total Content</div>
+            <div className="text-gray-600">Total Content</div>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-sm text-center border border-gray-200">
-            <div className="text-3xl font-bold text-blue-600 mb-2">AI</div>
-            <div className="text-gray-600 font-medium">Powered Learning</div>
+          <div className="bg-white p-6 rounded-lg shadow-sm text-center">
+            <div className="text-3xl font-bold text-orange-600 mb-2">AI</div>
+            <div className="text-gray-600">Powered Learning</div>
           </div>
         </div>
 
@@ -209,11 +205,11 @@ export default function LearningPathways() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between text-sm text-gray-600">
                         <div className="flex items-center">
-                          <VideoIcon className="w-4 h-4 mr-2 text-gray-500" />
+                          <span className="mr-1">📹</span>
                           <span>{pathway.videoCount} videos</span>
                         </div>
                         <div className="flex items-center">
-                          <ClockIcon className="w-4 h-4 mr-2 text-gray-500" />
+                          <span className="mr-1">⏱️</span>
                           <span>{pathway.duration}</span>
                         </div>
                       </div>
@@ -264,14 +260,8 @@ export default function LearningPathways() {
                     </p>
 
                     <div className="flex items-center justify-between text-xs text-gray-600">
-                      <span className="flex items-center">
-                        <VideoIcon className="w-3 h-3 mr-1 text-gray-500" />
-                        {pathway.videoCount} videos
-                      </span>
-                      <span className="flex items-center">
-                        <ClockIcon className="w-3 h-3 mr-1 text-gray-500" />
-                        {pathway.duration}
-                      </span>
+                      <span>📹 {pathway.videoCount} videos</span>
+                      <span>⏱️ {pathway.duration}</span>
                     </div>
 
                     <div className="mt-3 pt-3 border-t">

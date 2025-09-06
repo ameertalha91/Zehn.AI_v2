@@ -1,17 +1,22 @@
 
 'use client';
 import Link from 'next/link';
+import ZehnLogo from './ZehnLogo';
+
 export default function Nav(){
   return (
-    <nav className="border-b bg-white">
-      <div className="container h-14 flex items-center justify-between">
-        <Link href="/" className="font-bold text-blue-600">Zehn.AI</Link>
-        <div className="flex gap-4">
-          <Link href="/learning-pathways" className="hover:text-blue-600 transition-colors">Learning Pathways</Link>
-          <Link href="/cognitive-assistant" className="hover:text-blue-600 transition-colors">Cognitive Assistant</Link>
-          <Link href="/scholar-dashboard" className="hover:text-blue-600 transition-colors">Scholar Dashboard</Link>
-          <Link href="/educator-center" className="hover:text-blue-600 transition-colors">Educator Center</Link>
-          <Link href="/centers" className="hover:underline text-gray-600">For Institutions</Link>
+    <nav className="border-b bg-white shadow-sm">
+      <div className="container h-16 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-3 font-bold text-gray-900 hover:text-teal-600 transition-colors">
+          <ZehnLogo size="md" />
+          <span className="text-xl">Zehn.AI</span>
+        </Link>
+        <div className="flex gap-6">
+          <Link href="/learning-pathways" className="text-gray-700 hover:text-teal-600 transition-colors font-medium">Course Catalog</Link>
+          <Link href="/cognitive-assistant" className="text-gray-700 hover:text-teal-600 transition-colors font-medium">Cognitive Assistant</Link>
+          <Link href="/dashboard" className="text-gray-700 hover:text-teal-600 transition-colors font-medium">Dashboard</Link>
+          <Link href="/educator-center" className="text-gray-700 hover:text-teal-600 transition-colors font-medium">Educator Center</Link>
+          <Link href="/centers" className="text-gray-500 hover:text-gray-700 transition-colors">For Institutions</Link>
         </div>
       </div>
     </nav>

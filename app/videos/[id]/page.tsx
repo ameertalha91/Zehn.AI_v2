@@ -1,65 +1,76 @@
 "use client";
 
 import { useParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import VideoQuizComponent from '../../../components/VideoQuizComponent';
 import Link from 'next/link';
+import { BookIcon, ChartIcon } from '@/components/Icons';
 
-// Mock data - in real app, this would come from database
-const videoData: Record<string, {
+// Type definition for video
+type Video = {
+  id: string;
   title: string;
   instructor: string;
   subject: string;
   description: string;
   uploadDate: string;
   duration: string;
-}> = {
-  'vxCnkM48zPY': {
-    title: 'Pakistan Studies - Constitutional Development',
-    instructor: 'Dr. Ahmed Khan',
-    subject: 'Pakistan Studies',
-    description: 'A comprehensive overview of Pakistan\'s constitutional development from 1947 to the present day. This lecture covers the major constitutional milestones, challenges faced during different eras, and the evolution of democratic institutions in Pakistan.',
-    uploadDate: '2024-08-15',
-    duration: '45:30'
-  },
-  'dQw4w9WgXcQ': {
-    title: 'International Relations - Pakistan\'s Foreign Policy',
-    instructor: 'Prof. Sara Ali',
-    subject: 'International Relations',
-    description: 'An in-depth analysis of Pakistan\'s foreign policy strategies, diplomatic relations with major powers, and regional dynamics in South Asia.',
-    uploadDate: '2024-08-10',
-    duration: '38:45'
-  },
-  'eBGIQ7ZuuiU': {
-    title: 'Current Affairs - Economic Challenges',
-    instructor: 'Dr. Ahmed Khan',
-    subject: 'Current Affairs',
-    description: 'Discussion on current economic challenges facing Pakistan, including inflation, debt management, and potential solutions for sustainable growth.',
-    uploadDate: '2024-08-20',
-    duration: '52:15'
-  },
-  // ADD THE SAME VIDEO HERE
-  'ABC123XYZ': {
-    title: 'CSS History Paper Preparation',
-    instructor: 'Prof. Maria Khan',
-    subject: 'History',
-    description: 'Complete guide to preparing for CSS History paper with key topics, exam strategies, and important historical events that frequently appear in CSS examinations.',
-    uploadDate: '2024-09-01',
-    duration: '60:00'
-  }
+  thumbnail: string;
+  views: number;
 };
 
 export default function VideoPage() {
   const params = useParams();
   const videoId = params.id as string;
+  const [video, setVideo] = useState<Video | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  // Fetch video data from API
+  useEffect(() => {
+    const fetchVideo = async () => {
+      try {
+        const response = await fetch('/api/admin/videos');
+        const data = await response.json();
+        
+        if (data.success && data.videos) {
+          const foundVideo = data.videos.find((v: Video) => v.id === videoId);
+          if (foundVideo) {
+            setVideo(foundVideo);
+          } else {
+            setError('Video not found');
+          }
+        } else {
+          setError('Failed to load video data');
+        }
+      } catch (error) {
+        console.error('Error fetching video:', error);
+        setError('Failed to load video');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVideo();
+  }, [videoId]);
+
+  if (loading) {
+    return (
+      <div className="container py-12 text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p>Loading video...</p>
+      </div>
+    );
+  }
   
-  // Get video metadata
-  const video = videoData[videoId];
   
-  if (!video) {
+  if (error || !video) {
     return (
       <div className="container py-12 text-center">
         <h1 className="text-2xl font-bold mb-4">Video Not Found</h1>
-        <p className="text-gray-600 mb-6">The video you're looking for doesn't exist.</p>
+        <p className="text-gray-600 mb-6">
+          {error || "The video you're looking for doesn't exist."}
+        </p>
         <Link href="/videos" className="btn-primary">
           Back to Video Library
         </Link>
@@ -109,7 +120,10 @@ export default function VideoPage() {
         {/* Additional Study Resources */}
         <div className="mt-8 grid md:grid-cols-2 gap-6">
           <div className="card p-6">
-            <h3 className="font-semibold mb-3">📚 Related Study Materials</h3>
+            <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <BookIcon className="w-5 h-5 text-teal-600" />
+              Related Study Materials
+            </h3>
             <p className="text-gray-600 mb-4">
               Access additional resources for {video.subject} to deepen your understanding.
             </p>
@@ -119,7 +133,10 @@ export default function VideoPage() {
           </div>
           
           <div className="card p-6">
-            <h3 className="font-semibold mb-3">📊 Track Your Progress</h3>
+            <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <ChartIcon className="w-5 h-5 text-teal-600" />
+              Track Your Progress
+            </h3>
             <p className="text-gray-600 mb-4">
               Monitor your quiz performance and study plan progress.
             </p>

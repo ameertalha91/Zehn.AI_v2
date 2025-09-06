@@ -1,12 +1,80 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-body {@apply bg-white text-ink;}
-.container {@apply mx-auto max-w-6xl px-4;}
-.btn {@apply inline-flex items-center gap-2 px-4 py-2 rounded-xl border font-medium;}
-.btn-primary {@apply btn bg-primary text-white border-primary;}
-.btn-ghost {@apply btn bg-white text-ink border-gray-300;}
-.card {@apply bg-white border border-gray-200 rounded-2xl shadow-sm;}
-h1,h2,h3 {@apply font-semibold;}
-small.note {@apply text-xs text-gray-500;}
+
+body {
+  @apply bg-white text-gray-900 font-sans;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.container {
+  @apply mx-auto max-w-7xl px-4;
+}
+
+.btn {
+  @apply inline-flex items-center gap-2 px-6 py-3 border-2 font-semibold transition-all duration-200;
+  border-radius: 0;
+}
+
+.btn-primary {
+  @apply btn bg-teal-600 hover:bg-teal-500 text-white border-teal-600 shadow-sm hover:shadow-md;
+}
+
+.btn-secondary {
+  @apply btn bg-purple-600 hover:bg-purple-500 text-white border-purple-600 shadow-sm hover:shadow-md;
+}
+
+.btn-ghost {
+  @apply btn bg-white hover:bg-gray-50 text-gray-700 border-gray-400 hover:border-gray-600;
+}
+
+.card {
+  @apply bg-white border-2 border-gray-300 shadow-sm hover:shadow-md transition-shadow duration-200;
+  border-radius: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'JetBrains Mono', monospace;
+  @apply font-bold tracking-tight;
+}
+
+h1 {
+  @apply text-4xl;
+}
+
+h2 {
+  @apply text-3xl;
+}
+
+h3 {
+  @apply text-xl;
+}
+
+small.note {
+  @apply text-xs text-gray-500;
+}
+
+/* Remove all border radius */
+* {
+  border-radius: 0 !important;
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out;
+}

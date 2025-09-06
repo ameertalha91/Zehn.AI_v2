@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { MonitorIcon } from '@/components/Icons';
 
 export default function StreamManager() {
   const [isAddingSession, setIsAddingSession] = useState(false);
@@ -149,7 +150,10 @@ export default function StreamManager() {
           
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold mb-2">📺 Stream Session Manager</h1>
+              <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
+                <MonitorIcon className="w-8 h-8 text-blue-600" />
+                Stream Session Manager
+              </h1>
               <p className="text-gray-600">Create and manage adaptive learning stream sessions with AI integration</p>
             </div>
             
@@ -469,7 +473,7 @@ export default function StreamManager() {
           <h3 className="text-xl font-semibold mb-6">Current Stream Sessions</h3>
           
           <div className="text-center py-8 text-gray-500">
-            <span className="text-4xl mb-4 block">📺</span>
+            <MonitorIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
             <p className="text-lg mb-2">Enhanced Stream Session Management</p>
             <p className="text-sm mb-4">Sessions are now organized by learning pathways with advanced metadata</p>
             <div className="flex justify-center gap-4">

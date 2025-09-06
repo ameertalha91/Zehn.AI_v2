@@ -1,69 +1,139 @@
 
 import Link from 'next/link';
+
 export default function Home(){
   return (
     <div>
-      <header className="bg-gradient-to-br from-white to-subtle">
-        <div className="container py-16">
-          <h1 className="text-4xl font-bold mb-2">Zehn Learning Ecosystem</h1>
-          <p className="text-gray-600 max-w-2xl mb-2">Advanced AI-Powered CSS Examination Preparation</p>
-          <p className="text-gray-500 max-w-2xl">Adaptive Learning Streams · Cognitive Intelligence · Competency Validation</p>
-          <div className="mt-8 flex gap-4">
-            <Link className="btn-primary text-lg px-6 py-3" href="/learning-pathways">Explore Learning Pathways</Link>
-            <Link className="btn-primary bg-purple-600 hover:bg-purple-700 text-lg px-6 py-3" href="/cognitive-assistant">AI Cognitive Assistant</Link>
+      {/* Hero Section */}
+      <header className="bg-gradient-to-br from-gray-900 via-gray-800 to-teal-900 text-white">
+        <div className="container py-20">
+          <div className="max-w-4xl">
+            <h1 className="text-6xl font-bold mb-6 leading-tight">
+              The CSS Intelligence
+              <span className="text-teal-400"> Cloud</span>
+            </h1>
+            <p className="text-xl text-gray-300 mb-4 max-w-3xl">
+              Where aspiring civil servants find infinite scale to master CSS examination preparation
+            </p>
+            <p className="text-gray-400 mb-10 max-w-2xl">
+              AI-Powered Learning · Adaptive Pathways · Cognitive Assessment · Intelligence Amplification
+            </p>
+            <div className="flex gap-4">
+              <Link className="bg-teal-600 hover:bg-teal-500 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors" href="/learning-pathways">
+                Launch Learning Platform
+              </Link>
+              <Link className="border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 px-8 py-4 rounded-lg font-semibold text-lg transition-colors" href="/cognitive-assistant">
+                Try Cognitive Assistant
+              </Link>
+            </div>
           </div>
         </div>
       </header>
       
-      {/* Advanced Features Section */}
-      <div className="container py-12">
-        <h2 className="text-3xl font-bold text-center mb-8">Advanced Learning Technologies</h2>
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          <Link href="/learning-pathways" className="card p-8 hover:shadow-xl transition-all group border-l-4 border-blue-500">
-            <h3 className="font-bold text-xl mb-3 group-hover:text-blue-600">🎯 Adaptive Learning Streams</h3>
-            <p className="text-gray-600 mb-4">Experience interactive knowledge streams with AI-powered quiz generation every 5 minutes. Adaptive difficulty based on your comprehension velocity.</p>
-            <div className="flex items-center text-blue-600 font-medium">
-              <span>Access Learning Pathways</span>
-              <span className="ml-2">→</span>
-            </div>
-          </Link>
+      {/* Features Section */}
+      <div className="bg-white py-20">
+        <div className="container">
+          <h2 className="text-4xl font-bold text-center mb-4 text-gray-900">
+            Advanced Learning Infrastructure
+          </h2>
+          <p className="text-center text-gray-600 mb-16 max-w-2xl mx-auto">
+            Get the most sophisticated and highest-performing CSS preparation platform
+          </p>
           
-          <Link href="/cognitive-assistant" className="card p-8 hover:shadow-xl transition-all group border-l-4 border-purple-500">
-            <h3 className="font-bold text-xl mb-3 group-hover:text-purple-600">� Cognitive Synthesis Engine</h3>
-            <p className="text-gray-600 mb-4">Advanced AI research assistant trained on CSS syllabus. Generate exam-style responses with proper citations and knowledge graph integration.</p>
-            <div className="flex items-center text-purple-600 font-medium">
-              <span>Launch Cognitive Assistant</span>
-              <span className="ml-2">→</span>
-            </div>
-          </Link>
+          <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+            <Link href="/learning-pathways" className="group">
+              <div className="bg-gray-50 hover:bg-gray-100 p-8 rounded-2xl transition-all border border-gray-200 hover:border-teal-300 hover:shadow-lg">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-teal-600 rounded-lg flex items-center justify-center mr-4">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 group-hover:text-teal-600 transition-colors">
+                    Course Catalog & Pathways
+                  </h3>
+                </div>
+                <p className="text-gray-600 mb-6 leading-relaxed">
+                  Comprehensive course catalog featuring structured learning pathways for all CSS subjects. 
+                  Interactive video libraries, AI-powered assessments, and adaptive difficulty progression.
+                </p>
+                <div className="flex items-center text-teal-600 font-semibold group-hover:text-teal-700">
+                  <span>Browse Course Catalog</span>
+                  <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+            
+            <Link href="/cognitive-assistant" className="group">
+              <div className="bg-gray-50 hover:bg-gray-100 p-8 rounded-2xl transition-all border border-gray-200 hover:border-purple-300 hover:shadow-lg">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mr-4">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors">
+                    Cognitive Intelligence Engine
+                  </h3>
+                </div>
+                <p className="text-gray-600 mb-6 leading-relaxed">
+                  Advanced AI research assistant trained on complete CSS syllabus. Generate exam-style responses, 
+                  conduct policy analysis, and access intelligent document processing with citation support.
+                </p>
+                <div className="flex items-center text-purple-600 font-semibold group-hover:text-purple-700">
+                  <span>Launch Cognitive Assistant</span>
+                  <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+          </div>
         </div>
       </div>
 
-      {/* Platform Capabilities */}
-      <div className="bg-gray-50 py-16">
+      {/* Platform Stats */}
+      <div className="bg-gray-900 text-white py-20">
         <div className="container">
-          <h2 className="text-2xl font-bold text-center mb-12">Platform Intelligence Capabilities</h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <h2 className="text-3xl font-bold text-center mb-16">Platform Intelligence Metrics</h2>
+          <div className="grid md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">📊</span>
+              <div className="w-16 h-16 bg-teal-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
               </div>
-              <h3 className="font-semibold mb-2">Learning Analytics Engine</h3>
-              <p className="text-sm text-gray-600">Real-time progress tracking with cognitive load optimization and performance benchmarking.</p>
+              <div className="text-3xl font-bold text-teal-400 mb-2">8</div>
+              <div className="text-gray-400 text-sm">CSS Subjects</div>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">🎪</span>
+              <div className="w-16 h-16 bg-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
               </div>
-              <h3 className="font-semibold mb-2">Competency Validation Suite</h3>
-              <p className="text-sm text-gray-600">Intelligent document scanning, automated feedback generation, and assessment orchestration.</p>
+              <div className="text-3xl font-bold text-purple-400 mb-2">100+</div>
+              <div className="text-gray-400 text-sm">Video Lectures</div>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">🚀</span>
+              <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
               </div>
-              <h3 className="font-semibold mb-2">Institutional Command Center</h3>
-              <p className="text-sm text-gray-600">Complete educator toolkit with pathway architect, scholar analytics, and insight dashboards.</p>
+              <div className="text-3xl font-bold text-blue-400 mb-2">AI</div>
+              <div className="text-gray-400 text-sm">Powered Learning</div>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="text-3xl font-bold text-green-400 mb-2">24/7</div>
+              <div className="text-gray-400 text-sm">Available</div>
             </div>
           </div>
         </div>

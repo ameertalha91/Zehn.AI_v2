@@ -1,0 +1,91 @@
+[
+  {
+    "id": "css-excellence-pathway",
+    "title": "CSS Excellence Mastery Pathway",
+    "description": "Comprehensive preparation for Pakistan Civil Services examination with focus on constitutional development, political evolution, and governance structures.",
+    "category": "Pakistan Studies",
+    "instructor": "Dr. Ahmed Hassan Khan",
+    "duration": "180 hours",
+    "students": 245,
+    "difficulty": "Advanced",
+    "sessions": [
+      {
+        "id": "session_1757136790974_jgb10eznr",
+        "videoId": "YDfyHLPhRVU",
+        "videoUrl": "https://www.youtube.com/watch?v=YDfyHLPhRVU",
+        "title": "Mehdi Hasan Isreali ambassador",
+        "instructor": "Mehdi hassan",
+        "pathwayId": "css-excellence-pathway",
+        "category": "Pakistan Studies",
+        "description": "NA",
+        "duration": "30",
+        "objectives": [],
+        "keyTopics": [],
+        "difficultyLevel": "Intermediate",
+        "sessionOrder": 1,
+        "thumbnail": "https://img.youtube.com/vi/YDfyHLPhRVU/hqdefault.jpg",
+        "uploadDate": "2025-09-06",
+        "views": 0,
+        "completionRate": 0
+      }
+    ],
+    "outcomes": [
+      "Master constitutional development timeline",
+      "Analyze political evolution patterns",
+      "Understand governance structures",
+      "Apply analytical thinking to policy questions"
+    ],
+    "prerequisites": [
+      "Basic knowledge of Pakistan history",
+      "Understanding of political systems",
+      "Critical analysis skills"
+    ],
+    "thumbnail": "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+  },
+  {
+    "id": "diplomatic-mastery-track",
+    "title": "Diplomatic Intelligence Mastery Track",
+    "description": "Advanced curriculum covering international relations, diplomatic protocols, and foreign policy analysis for aspiring diplomats.",
+    "category": "International Relations",
+    "instructor": "Ambassador Sarah Malik",
+    "duration": "150 hours",
+    "students": 189,
+    "difficulty": "Advanced",
+    "sessions": [],
+    "outcomes": [
+      "Understand international law frameworks",
+      "Analyze diplomatic strategies",
+      "Master negotiation techniques",
+      "Apply foreign policy analysis"
+    ],
+    "prerequisites": [
+      "International relations basics",
+      "Understanding of global politics",
+      "Research and analysis skills"
+    ],
+    "thumbnail": "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+  },
+  {
+    "id": "current-affairs-intelligence",
+    "title": "Current Affairs Intelligence Journey",
+    "description": "Dynamic learning pathway focusing on contemporary issues, policy analysis, and strategic thinking for competitive examinations.",
+    "category": "Current Affairs",
+    "instructor": "Prof. Muhammad Ali Shah",
+    "duration": "120 hours",
+    "students": 312,
+    "difficulty": "Intermediate",
+    "sessions": [],
+    "outcomes": [
+      "Stay updated with current developments",
+      "Analyze policy implications",
+      "Develop strategic thinking",
+      "Master exam-style responses"
+    ],
+    "prerequisites": [
+      "Basic awareness of current events",
+      "Reading comprehension skills",
+      "Analytical mindset"
+    ],
+    "thumbnail": "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+  }
+]

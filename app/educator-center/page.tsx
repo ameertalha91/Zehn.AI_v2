@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { GraduationCapIcon, ChartIcon, TargetIcon, MonitorIcon, TrendUpIcon, UsersIcon, RocketIcon } from '@/components/Icons';
 
 export default function EducatorCenter() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -25,8 +26,9 @@ export default function EducatorCenter() {
       {/* Header */}
       <div className="bg-white border-b">
         <div className="container py-8">
-          <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            🎓 Educator Command Center
+          <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+            <GraduationCapIcon className="w-10 h-10 text-blue-600" />
+            EDUCATOR COMMAND CENTER
           </h1>
           <p className="text-xl text-gray-600">
             Advanced Learning Pathway Management & Scholar Analytics
@@ -39,10 +41,10 @@ export default function EducatorCenter() {
         <div className="container">
           <nav className="flex space-x-8">
             {[
-              { id: 'overview', label: 'Dashboard Overview', icon: '📊' },
-              { id: 'pathways', label: 'Pathway Architect', icon: '🎯' },
-              { id: 'sessions', label: 'Stream Manager', icon: '📺' },
-              { id: 'analytics', label: 'Scholar Analytics', icon: '📈' }
+              { id: 'overview', label: 'Dashboard Overview', icon: <ChartIcon className="w-5 h-5" /> },
+              { id: 'pathways', label: 'Pathway Architect', icon: <TargetIcon className="w-5 h-5" /> },
+              { id: 'sessions', label: 'Stream Manager', icon: <MonitorIcon className="w-5 h-5" /> },
+              { id: 'analytics', label: 'Scholar Analytics', icon: <TrendUpIcon className="w-5 h-5" /> }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -74,7 +76,7 @@ export default function EducatorCenter() {
                     <p className="text-3xl font-bold text-blue-700">{pathwayStats.totalPathways}</p>
                   </div>
                   <div className="bg-blue-100 p-3 rounded-lg">
-                    <span className="text-2xl">🎯</span>
+                    <TargetIcon className="w-8 h-8 text-blue-600" />
                   </div>
                 </div>
               </div>
@@ -86,7 +88,7 @@ export default function EducatorCenter() {
                     <p className="text-3xl font-bold text-purple-700">{pathwayStats.totalSessions}</p>
                   </div>
                   <div className="bg-purple-100 p-3 rounded-lg">
-                    <span className="text-2xl">📺</span>
+                    <MonitorIcon className="w-8 h-8 text-purple-600" />
                   </div>
                 </div>
               </div>
@@ -98,7 +100,7 @@ export default function EducatorCenter() {
                     <p className="text-3xl font-bold text-green-700">{pathwayStats.activeScholars.toLocaleString()}</p>
                   </div>
                   <div className="bg-green-100 p-3 rounded-lg">
-                    <span className="text-2xl">👥</span>
+                    <UsersIcon className="w-8 h-8 text-green-600" />
                   </div>
                 </div>
               </div>
@@ -119,7 +121,10 @@ export default function EducatorCenter() {
             {/* Quick Actions */}
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-white rounded-lg p-6">
-                <h3 className="text-lg font-semibold mb-4">🚀 Quick Actions</h3>
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <RocketIcon className="w-5 h-5 text-blue-600" />
+                  QUICK ACTIONS
+                </h3>
                 <div className="space-y-3">
                   <button 
                     onClick={() => setActiveTab('sessions')}
@@ -148,7 +153,10 @@ export default function EducatorCenter() {
               </div>
 
               <div className="bg-white rounded-lg p-6">
-                <h3 className="text-lg font-semibold mb-4">📊 Recent Activity</h3>
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <ChartIcon className="w-5 h-5 text-blue-600" />
+                  RECENT ACTIVITY
+                </h3>
                 <div className="space-y-3">
                   {recentActivity.map((activity, index) => (
                     <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
@@ -172,7 +180,10 @@ export default function EducatorCenter() {
         {activeTab === 'pathways' && (
           <div className="bg-white rounded-lg p-8">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">🎯 Pathway Architect</h2>
+              <h2 className="text-2xl font-bold flex items-center gap-3">
+                <TargetIcon className="w-7 h-7 text-blue-600" />
+                PATHWAY ARCHITECT
+              </h2>
               <button className="btn-primary">+ Create New Pathway</button>
             </div>
             
@@ -193,7 +204,10 @@ export default function EducatorCenter() {
         {activeTab === 'sessions' && (
           <div className="bg-white rounded-lg p-8">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">📺 Stream Session Manager</h2>
+              <h2 className="text-2xl font-bold flex items-center gap-3">
+                <MonitorIcon className="w-7 h-7 text-blue-600" />
+                STREAM SESSION MANAGER
+              </h2>
               <Link href="/educator-center/stream-manager" className="btn-primary">
                 + Add Stream Session
               </Link>
@@ -266,13 +280,16 @@ export default function EducatorCenter() {
         {/* Scholar Analytics Tab */}
         {activeTab === 'analytics' && (
           <div className="bg-white rounded-lg p-8">
-            <h2 className="text-2xl font-bold mb-6">📈 Scholar Analytics Engine</h2>
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+              <TrendUpIcon className="w-7 h-7 text-blue-600" />
+              SCHOLAR ANALYTICS ENGINE
+            </h2>
             <p className="text-gray-600 mb-6">
               Advanced analytics and insights into scholar engagement, progress, and performance patterns.
             </p>
             
             <div className="text-center py-12 text-gray-500">
-              <span className="text-6xl mb-4 block">📊</span>
+              <ChartIcon className="w-24 h-24 mx-auto mb-4 text-gray-300" />
               <h3 className="text-xl font-semibold mb-2">Advanced Analytics Dashboard</h3>
               <p className="mb-4">Real-time scholar engagement metrics, learning velocity analysis, and predictive insights</p>
               <p className="text-sm">Feature under development with machine learning integration</p>
