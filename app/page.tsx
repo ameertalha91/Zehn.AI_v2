@@ -23,7 +23,7 @@ export default function Home(){
                 Launch Learning Platform
               </Link>
               <Link className="border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 px-8 py-4 rounded-lg font-semibold text-lg transition-colors" href="/cognitive-assistant">
-                Try Cognitive Assistant
+                Try Ilmi thotbot
               </Link>
             </div>
           </div>
@@ -75,7 +75,7 @@ export default function Home(){
                     </svg>
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors">
-                    Cognitive Intelligence Engine
+                    Ilmi thotbot
                   </h3>
                 </div>
                 <p className="text-gray-600 mb-6 leading-relaxed">
@@ -83,7 +83,60 @@ export default function Home(){
                   conduct policy analysis, and access intelligent document processing with citation support.
                 </p>
                 <div className="flex items-center text-purple-600 font-semibold group-hover:text-purple-700">
-                  <span>Launch Cognitive Assistant</span>
+                  <span>Launch Ilmi thotbot</span>
+                  <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+          </div>
+
+          {/* Assignment Management Section */}
+          <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto mt-12">
+            <Link href="/assignments" className="group">
+              <div className="bg-gray-50 hover:bg-gray-100 p-8 rounded-2xl transition-all border border-gray-200 hover:border-blue-300 hover:shadow-lg">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mr-4">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    Assignment Management
+                  </h3>
+                </div>
+                <p className="text-gray-600 mb-6 leading-relaxed">
+                  Create and manage assignments with intelligent PDF processing. Teachers can review submissions, 
+                  provide detailed feedback, and track student progress with automated grading support.
+                </p>
+                <div className="flex items-center text-blue-600 font-semibold group-hover:text-blue-700">
+                  <span>Manage Assignments</span>
+                  <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+            
+            <Link href="/student-assignments" className="group">
+              <div className="bg-gray-50 hover:bg-gray-100 p-8 rounded-2xl transition-all border border-gray-200 hover:border-green-300 hover:shadow-lg">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mr-4">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 group-hover:text-green-600 transition-colors">
+                    Submit Assignments
+                  </h3>
+                </div>
+                <p className="text-gray-600 mb-6 leading-relaxed">
+                  Upload PDF assignments with automatic text extraction. Track submission status, 
+                  receive teacher feedback, and view grades with detailed performance analytics.
+                </p>
+                <div className="flex items-center text-green-600 font-semibold group-hover:text-green-700">
+                  <span>View My Assignments</span>
                   <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>

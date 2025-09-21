@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import VideoQuizComponent from '../../../components/VideoQuizComponent';
 import Link from 'next/link';
-import { BookIcon, ChartIcon } from '@/components/Icons';
+import { BookIcon, ChartIcon, UserIcon, ClockIcon, CalendarIcon } from '@/components/Icons';
 
 // Type definition for video
 type Video = {
@@ -104,9 +104,18 @@ export default function VideoPage() {
             <p className="text-gray-600 mb-4">{video.description}</p>
             
             <div className="flex items-center gap-6 text-sm text-gray-500">
-              <span>👨‍🏫 {video.instructor}</span>
-              <span>🕒 {video.duration}</span>
-              <span>📅 {new Date(video.uploadDate).toLocaleDateString()}</span>
+              <span className="flex items-center gap-2">
+                <UserIcon className="w-4 h-4 text-teal-600" />
+                {video.instructor}
+              </span>
+              <span className="flex items-center gap-2">
+                <ClockIcon className="w-4 h-4 text-teal-600" />
+                {video.duration}
+              </span>
+              <span className="flex items-center gap-2">
+                <CalendarIcon className="w-4 h-4 text-teal-600" />
+                {new Date(video.uploadDate).toLocaleDateString()}
+              </span>
             </div>
           </div>
         </div>

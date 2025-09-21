@@ -9,3 +9,6 @@ export const db = globalForPrisma.prisma ?? new PrismaClient();
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = db;
 }
+
+// Also export as prisma for compatibility
+export const prisma = db;

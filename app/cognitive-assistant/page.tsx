@@ -113,7 +113,7 @@ export default function CognitiveAssistant() {
         <div className="container py-16">
           <div className="max-w-4xl">
             <h1 className="text-5xl font-bold mb-6">
-              COGNITIVE SYNTHESIS ENGINE
+              ILMI THOTBOT
             </h1>
             <p className="text-xl text-gray-300 mb-8">
               Advanced AI Research Assistant for CSS Examination Preparation
@@ -145,16 +145,16 @@ export default function CognitiveAssistant() {
                 <BookIcon className="w-6 h-6 text-teal-700" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-lg mb-2 text-gray-900">KNOWLEDGE BASE INTEGRATION</h3>
+                <h3 className="font-bold text-lg mb-2 text-gray-900">Knowledge Base</h3>
                 <p className="text-gray-600 mb-4">
-                  Initialize the knowledge synthesis engine with CSS-specific documents for enhanced contextual responses.
+                  Initialize the knowledge base with CSS-specific documents for better responses.
                 </p>
                 <button 
                   onClick={processPDF}
                   disabled={processingPDF}
                   className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 disabled:opacity-50 transition-all font-bold border-2 border-gray-900"
                 >
-                  {processingPDF ? "PROCESSING KNOWLEDGE BASE..." : "INITIALIZE KNOWLEDGE GRAPH"}
+                  {processingPDF ? "Processing..." : "Initialize Knowledge Base"}
                 </button>
               </div>
             </div>
@@ -163,8 +163,8 @@ export default function CognitiveAssistant() {
           {/* Advanced Query Interface */}
           <div className="bg-white border-2 border-gray-200 overflow-hidden">
             <div className="bg-teal-600 text-white p-6 border-b-2 border-teal-700">
-              <h2 className="text-xl font-bold mb-2">INTELLIGENT QUERY INTERFACE</h2>
-              <p className="text-teal-100">Ask complex questions and receive exam-style responses with citations</p>
+              <h2 className="text-xl font-bold mb-2">Ask a Question</h2>
+              <p className="text-teal-100">Get intelligent responses to your CSS exam questions</p>
             </div>
             
             <div className="p-6">
@@ -172,7 +172,7 @@ export default function CognitiveAssistant() {
                 <div className="relative">
                   <textarea
                     className="w-full border-2 border-gray-300 px-4 py-4 pr-24 focus:outline-none focus:border-teal-500 resize-none bg-white"
-                    placeholder="Enter your CSS syllabus question... (e.g., 'Analyze the constitutional development of Pakistan from 1947 to 1973 with emphasis on key challenges faced during this period.')"
+                    placeholder="Ask your CSS exam question here..."
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     rows={4}
@@ -181,7 +181,7 @@ export default function CognitiveAssistant() {
                     disabled={loading || !input.trim()} 
                     className="absolute bottom-4 right-4 bg-gray-900 hover:bg-gray-800 text-white px-6 py-2 disabled:opacity-50 transition-all font-bold border-2 border-gray-900"
                   >
-                    {loading ? "SYNTHESIZING..." : "ANALYZE"}
+                    {loading ? "Analyzing..." : "Ask"}
                   </button>
                 </div>
               </form>
@@ -189,12 +189,12 @@ export default function CognitiveAssistant() {
               {/* Enhanced Response Display */}
               <div className="border-2 border-gray-200 min-h-[300px] bg-gray-50">
                 <div className="bg-gray-200 px-4 py-3 border-b-2 border-gray-300 flex items-center justify-between">
-                  <span className="font-bold text-gray-900">AI COGNITIVE RESPONSE</span>
+                  <span className="font-bold text-gray-900">Response</span>
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     {answer && (
                       <>
                         <span className="w-3 h-3 bg-teal-500 border border-teal-400"></span>
-                        <span className="font-bold">RESPONSE GENERATED</span>
+                        <span className="font-bold">Ready</span>
                       </>
                     )}
                   </div>
@@ -204,8 +204,8 @@ export default function CognitiveAssistant() {
                     <div className="flex items-center justify-center py-8">
                       <div className="text-center">
                         <div className="animate-spin h-12 w-12 border-b-4 border-teal-600 mx-auto mb-4"></div>
-                        <p className="text-gray-700 font-bold">COGNITIVE SYNTHESIS IN PROGRESS...</p>
-                        <p className="text-sm text-gray-600 mt-2">Analyzing syllabus context and generating exam-style response</p>
+                        <p className="text-gray-700 font-bold">Analyzing...</p>
+                        <p className="text-sm text-gray-600 mt-2">Processing your question and generating response</p>
                       </div>
                     </div>
                   ) : answer ? (
@@ -215,8 +215,8 @@ export default function CognitiveAssistant() {
                   ) : (
                     <div className="text-center py-8 text-gray-500">
                       <BrainIcon className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                      <p className="text-lg mb-2 font-bold text-gray-700">READY FOR COGNITIVE ANALYSIS</p>
-                      <p className="text-sm">Ask a question to receive an intelligent, exam-formatted response</p>
+                      <p className="text-lg mb-2 font-bold text-gray-700">Ready to Help</p>
+                      <p className="text-sm">Ask a question to receive an intelligent response</p>
                     </div>
                   )}
                 </div>
@@ -224,12 +224,12 @@ export default function CognitiveAssistant() {
 
               {/* Usage Guidelines */}
               <div className="mt-6 bg-teal-50 border-2 border-teal-200 p-4">
-                <h4 className="font-bold text-teal-900 mb-2">OPTIMIZATION TIPS</h4>
+                <h4 className="font-bold text-teal-900 mb-2">Tips for Better Results</h4>
                 <ul className="text-sm text-teal-800 space-y-1">
-                  <li>• Frame questions in CSS examination style for best results</li>
-                  <li>• Include specific time periods, events, or concepts for detailed analysis</li>
-                  <li>• Use analytical terms like "evaluate," "assess," "compare," or "analyze"</li>
-                  <li>• Responses are formatted in intro-body-conclusion structure</li>
+                  <li>• Ask specific questions about CSS subjects</li>
+                  <li>• Include time periods or events for detailed analysis</li>
+                  <li>• Use analytical terms like "evaluate," "assess," or "compare"</li>
+                  <li>• Responses follow structured academic format</li>
                 </ul>
               </div>
             </div>
@@ -238,28 +238,28 @@ export default function CognitiveAssistant() {
           {/* Quick Access Links */}
           <div className="grid md:grid-cols-2 gap-6 mt-8">
             <div className="bg-white border-2 border-gray-200 p-6">
-              <h3 className="font-bold mb-3 flex items-center gap-2 text-gray-900">
+                <h3 className="font-bold mb-3 flex items-center gap-2 text-gray-900">
                 <TargetIcon className="w-5 h-5 text-teal-600" />
-                LEARNING INTEGRATION
+                Learning Paths
               </h3>
               <p className="text-gray-600 mb-4 text-sm">
-                Continue your learning journey with structured pathways and adaptive streams.
+                Explore structured courses and learning pathways.
               </p>
               <a href="/learning-pathways" className="text-teal-600 hover:text-teal-700 font-bold text-sm border-b-2 border-teal-600 hover:border-teal-700 pb-1">
-                BROWSE LEARNING PATHWAYS →
+                Browse Courses →
               </a>
             </div>
             
             <div className="bg-white border-2 border-gray-200 p-6">
               <h3 className="font-bold mb-3 flex items-center gap-2 text-gray-900">
                 <ChartIcon className="w-5 h-5 text-teal-600" />
-                PROGRESS TRACKING
+                Progress Tracking
               </h3>
               <p className="text-gray-600 mb-4 text-sm">
-                Monitor your learning analytics and performance metrics.
+                Monitor your learning progress and performance.
               </p>
               <a href="/dashboard" className="text-teal-600 hover:text-teal-700 font-bold text-sm border-b-2 border-teal-600 hover:border-teal-700 pb-1">
-                VIEW DASHBOARD →
+                View Dashboard →
               </a>
             </div>
           </div>

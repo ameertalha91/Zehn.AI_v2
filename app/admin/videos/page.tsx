@@ -296,7 +296,7 @@ export default function AdminVideos() {
           
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div>
-              <h4 className="font-medium">International Relations - Pakistan's Foreign Policy</h4>
+              <h4 className="font-medium">International Relations - Pakistan&apos;s Foreign Policy</h4>
               <p className="text-sm text-gray-600">by Prof. Sara Ali • International Relations • 38:45</p>
             </div>
             <button className="text-blue-600 hover:underline text-sm">Edit</button>

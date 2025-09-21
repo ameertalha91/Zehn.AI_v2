@@ -21,9 +21,6 @@ const VideoQuizComponent = ({ videoId = 'vxCnkM48zPY' }: { videoId?: string }) =
   const [videoTitle, setVideoTitle] = useState('');
   const [extractedKeywords, setExtractedKeywords] = useState([]);
 
-  // YouTube video URL - use the passed videoId
-  const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-
   const onReady = (event) => {
     setPlayer(event.target);
     setDuration(event.target.getDuration());

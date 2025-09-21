@@ -22,7 +22,7 @@ export default function LearningPathways() {
       videoCount: 12,
       duration: '45 hours',
       difficulty: 'Advanced',
-      icon: '🇵🇰'
+      icon: <NewsIcon className="w-6 h-6" />,
     },
     {
       id: 'international-relations',
@@ -134,7 +134,7 @@ export default function LearningPathways() {
             <div className="flex flex-wrap gap-4">
               <Link href="/cognitive-assistant" className="bg-teal-600 hover:bg-teal-500 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2">
                 <BrainIcon className="w-5 h-5" />
-                Cognitive Assistant
+                Ilmi thotbot
               </Link>
               <Link href="/educator-center" className="border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 px-6 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2">
                 <GraduationCapIcon className="w-5 h-5" />

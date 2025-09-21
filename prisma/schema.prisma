@@ -1,71 +1,117 @@
+/**
+ * DATABASE SCHEMA - Core data models for the CSS AI MVP
+ * 
+ * This schema defines the database structure for the course management system.
+ * It supports a multi-role system with students, tutors, and admins.
+ * 
+ * ARCHITECTURE OVERVIEW:
+ * - User management with role-based access (STUDENT, TUTOR, ADMIN)
+ * - Course system with centers, classes, and lectures
+ * - Enrollment tracking and progress management
+ * - Assignment and submission system
+ * - Quiz and question management
+ * 
+ * KEY RELATIONSHIPS:
+ * - Users belong to Centers (for tutors/admins)
+ * - Classes belong to Centers (instructor relationship)
+ * - Students enroll in Classes through Enrollment
+ * - Lectures belong to Classes
+ * - Assignments and Quizzes belong to Classes
+ * 
+ * RELATED MODULES TO UNDERSTAND:
+ * - /lib/db.ts - Database connection and Prisma client
+ * - /app/api/courses/route.ts - Course API using these models
+ * - /app/api/courses/[courseId]/enroll/route.ts - Enrollment API
+ * - /lib/course-context.tsx - Frontend state management
+ * - /data/learning-pathways.json - Alternative course content source
+ */
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
+// USER MANAGEMENT
+// Core user model with role-based access control
 model User {
   id        String       @id @default(cuid())
   email     String       @unique
   name      String
-  role      Role
-  centerId  String? // if tutor or admin
-  classes   Enrollment[]
-  messages  Message[]
+  password  String       // Hashed password
+  role      Role         // STUDENT, TUTOR, or ADMIN
+  centerId  String?      // For tutors/admins - which center they belong to
+  classes   Enrollment[] // Student enrollments
+  messages  Message[]    // Chat messages
   createdAt DateTime     @default(now())
   Center    Center?      @relation(fields: [centerId], references: [id])
 }
 
+// CENTER MANAGEMENT
+// Represents educational centers/institutions
 model Center {
   id        String   @id @default(cuid())
-  name      String
-  tutors    User[]
-  classes   Class[]
+  name      String   // Center name (e.g., "Zehn.AI CSS Academy")
+  tutors    User[]   // Users who belong to this center
+  classes   Class[]  // Courses offered by this center
   createdAt DateTime @default(now())
 }
 
+// COURSE MANAGEMENT
+// Represents individual courses/classes
 model Class {
-  id        String       @id @default(cuid())
-  name      String
-  centerId  String
-  center    Center       @relation(fields: [centerId], references: [id])
-  lectures  Lecture[]
-  quizzes   Quiz[]
-  students  Enrollment[]
-  messages  Message[]
-  createdAt DateTime     @default(now())
+  id          String       @id @default(cuid())
+  name        String       // Course name
+  description String?      // Course description
+  maxStudents Int          @default(50) // Enrollment limit
+  centerId    String       // Which center offers this course
+  center      Center       @relation(fields: [centerId], references: [id])
+  lectures    Lecture[]    // Course content (videos)
+  quizzes     Quiz[]       // Course quizzes
+  students    Enrollment[] // Student enrollments
+  messages    Message[]    // Course chat messages
+  assignments Assignment[] // Course assignments
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime?    @default(now())
 }
 
+// ENROLLMENT MANAGEMENT
+// Tracks which students are enrolled in which courses
 model Enrollment {
   id        String   @id @default(cuid())
-  userId    String
-  classId   String
+  userId    String   // Student ID
+  classId   String   // Course ID
   user      User     @relation(fields: [userId], references: [id])
   klass     Class    @relation(fields: [classId], references: [id])
-  role      String // "student" or "tutor"
+  role      String   // "student" or "tutor"
   createdAt DateTime @default(now())
 }
 
+// LECTURE MANAGEMENT
+// Individual video lectures within a course
 model Lecture {
   id         String   @id @default(cuid())
-  classId    String
+  classId    String   // Which course this lecture belongs to
   klass      Class    @relation(fields: [classId], references: [id])
-  title      String
-  videoUrl   String?
-  transcript String?
+  title      String   // Lecture title
+  videoUrl   String?  // YouTube or video URL
+  transcript String?  // Video transcript (optional)
   createdAt  DateTime @default(now())
 }
 
 model Quiz {
-  id          String   @id @default(cuid())
-  videoId     String
-  video       Video    @relation(fields: [videoId], references: [id])
-  questions   Json     // Stores array of questions
-  timeMarker  Int
-  createdAt   DateTime @default(now())
+  id            String     @id @default(cuid())
+  videoId       String
+  video         Video      @relation(fields: [videoId], references: [id])
+  questions     Json // Stores array of questions
+  timeMarker    Int
+  createdAt     DateTime   @default(now())
+  classId       String?
+  class         Class?     @relation(fields: [classId], references: [id])
+  quizQuestions Question[] // Added missing relation
 }
 
 model Question {
@@ -116,31 +162,69 @@ model Message {
 }
 
 model Video {
-  id          String    @id @default(cuid())
-  youtubeId   String    @unique
-  title       String
-  keywords    String[]
-  quizzes     Quiz[]
-  createdAt   DateTime  @default(now())
+  id        String   @id @default(cuid())
+  youtubeId String   @unique
+  title     String
+  keywords  String   // JSON string for SQLite compatibility
+  quizzes   Quiz[]
+  createdAt DateTime @default(now())
 }
 
 model SampleQuestion {
-  id          String   @id @default(cuid())
-  question    String
-  options     String[]
-  correct     Int
-  keywords    String[]
-  category    String
+  id       String @id @default(cuid())
+  question String
+  options  String // JSON string for SQLite compatibility
+  correct  Int
+  keywords String // JSON string for SQLite compatibility
+  category String
 }
 
-enum Role {
-  STUDENT
-  TUTOR
-  ADMIN
+model Assignment {
+  id          String                 @id @default(cuid())
+  title       String
+  description String
+  classId     String
+  createdBy   String // Teacher who created it
+  dueDate     DateTime
+  maxPoints   Int                    @default(100)
+  class       Class                  @relation(fields: [classId], references: [id])
+  submissions AssignmentSubmission[]
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
 }
-  timeMarker Int // Time in seconds when quiz should appear
-  questions  Json // Store pre-generated questions
-  createdAt  DateTime @default(now())
+
+model AssignmentSubmission {
+  id            String              @id @default(cuid())
+  assignmentId  String
+  studentId     String
+  filePath      String // Path to uploaded PDF
+  fileName      String // Original filename
+  fileSize      Int // File size in bytes
+  extractedText String? // OCR extracted text
+  assignment    Assignment          @relation(fields: [assignmentId], references: [id])
+  feedback      AssignmentFeedback?
+  status        SubmissionStatus    @default(SUBMITTED)
+  submittedAt   DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+}
+
+model AssignmentFeedback {
+  id           String               @id @default(cuid())
+  submissionId String               @unique
+  teacherId    String // Teacher providing feedback
+  grade        Int? // Grade out of max points
+  comments     String? // Teacher comments
+  rubricScores Json? // Detailed rubric scoring
+  submission   AssignmentSubmission @relation(fields: [submissionId], references: [id])
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  GRADED
+  RETURNED
+  LATE
 }
 
 enum Role {
