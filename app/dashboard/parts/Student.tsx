@@ -35,15 +35,40 @@ interface StudyPlan {
   lastUpdated: string;
 }
 
-export default function Student() {
-  const [plan, setPlan] = useState<StudyPlan | null>(null);
-  const [assignments, setAssignments] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeWeek, setActiveWeek] = useState(1);
+// STUDENT DASHBOARD COMPONENT - Integrates study plan with platform features
+// 
+// NAVIGATION ARCHITECTURE:
+// This component demonstrates how the study plan connects to other platform modules:
+// - Study Plan: Shows summary view, links to full /app/study-plan/page.tsx
+// - Assignments: Integrates with /app/api/assignments/ and /app/assignments/page.tsx
+// - Courses: Links to student course management /app/student/courses/
+// - Progress Tracking: Real-time updates from study plan and assignment APIs
+//
+// MODULE INTEGRATION PATTERNS:
+// 1. Multi-API data fetching (study plan + assignments)
+// 2. Summary views that link to detailed pages
+// 3. Real-time progress synchronization
+// 4. Role-based content filtering (student-only features)
+//
+// RELATED NAVIGATION TARGETS:
+// - /app/study-plan/page.tsx - Full study plan interface
+// - /app/assignments/page.tsx - Assignment management
+// - /app/student/courses/page.tsx - Enrolled courses
+// - /app/chat/page.tsx - Student support chat
 
+export default function Student() {
+  // MULTI-MODULE STATE MANAGEMENT
+  // Demonstrates how dashboard components aggregate data from multiple platform modules
+  const [plan, setPlan] = useState<StudyPlan | null>(null);        // From study plan API
+  const [assignments, setAssignments] = useState<any[]>([]);       // From assignments API
+  const [loading, setLoading] = useState(true);                   // Loading coordination
+  const [activeWeek, setActiveWeek] = useState(1);                // Study plan navigation state
+
+  // PARALLEL DATA FETCHING
+  // Dashboard pattern: Load multiple data sources simultaneously for better UX
   useEffect(() => {
-    fetchStudyPlan();
-    fetchAssignments();
+    fetchStudyPlan();    // /app/api/study-plan/route.tsx
+    fetchAssignments();  // /app/api/assignments/route.ts
   }, []);
 
   const fetchAssignments = async () => {

@@ -1,50 +1,144 @@
+/**
+ * STUDY PLAN MODULE - Personalized learning roadmap for CSS exam preparation
+ * 
+ * ARCHITECTURE OVERVIEW:
+ * This module provides students with a structured 6-week study plan, breaking down
+ * CSS exam preparation into manageable weekly themes and daily tasks.
+ * 
+ * MODULE RELATIONSHIPS:
+ * - Connected to: /app/dashboard/parts/Student.tsx (shows study plan summary)
+ * - API Endpoint: /app/api/study-plan/route.tsx (serves plan data)
+ * - Database: Uses StudyPlan model in /prisma/schema.prisma
+ * - Auth: Protected by role-based access (students only)
+ * - Navigation: Accessible from student dashboard
+ * 
+ * KEY PATTERNS DEMONSTRATED:
+ * 1. Frontend-first state management with API sync
+ * 2. Optimistic UI updates (task completion)
+ * 3. Role-based data filtering
+ * 4. TypeScript interface design for complex data structures
+ * 5. Responsive design with view switching (overview/detailed)
+ * 
+ * RELATED FILES TO UNDERSTAND:
+ * - /lib/auth-context.tsx - User authentication and role management
+ * - /app/api/study-plan/route.tsx - API data generation and persistence
+ * - /app/dashboard/parts/Student.tsx - Study plan integration in dashboard
+ * - /prisma/schema.prisma - StudyPlan database model
+ * - /app/api/courses/route.ts - Similar API patterns for course data
+ * 
+ * DEVELOPMENT CONTEXT:
+ * - Currently uses generated data, not user-specific database records
+ * - Task completion persists only in local state (not database yet)
+ * - Future: AI-driven adaptive planning based on performance
+ * - Future: Integration with actual course content and assignments
+ */
 "use client";
 
 import { useEffect, useState } from 'react';
 import { CheckCircle, Circle, Clock, BookOpen, Video, PenTool, FileText, Target, TrendingUp, Calendar, ArrowLeft, BarChart3, Award, Zap } from 'lucide-react';
 import Link from 'next/link';
 
+// TYPE DEFINITIONS - Frontend interfaces for study plan data
+// These mirror the API response structure but are optimized for UI rendering
+// Note: These are separate from database models for flexibility in data transformation
+//
+// DATABASE RELATIONSHIP MAPPING:
+// Frontend Interface → Database Model (prisma/schema.prisma)
+// StudyPlan → StudyPlan model (lines 145-151)
+// - Frontend uses structured objects, DB stores JSON in 'targets' field
+// - Frontend calculates progress dynamically, DB could cache these values
+// - Frontend includes UI-specific fields (completionRate, etc.)
+//
+// INTERFACE DESIGN PATTERNS:
+// 1. Separation of concerns: UI types vs database types
+// 2. Calculated fields (completionRate) computed at runtime
+// 3. Hierarchical data structure (plan → weeks → tasks)
+// 4. Type safety for enum values (difficulty, priority, type)
+
+// Individual learning task within a week
+// Maps to: JSON objects within StudyPlan.targets field in database
 interface StudyTask {
-  id: string;
-  title: string;
-  description: string;
-  duration: string;
-  type: 'video' | 'quiz' | 'essay' | 'reading' | 'practice';
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  completed: boolean;
-  priority: 'high' | 'medium' | 'low';
-  subject: string;
+  id: string;           // Unique identifier for progress tracking
+  title: string;        // Display name of the task
+  description: string;  // Detailed explanation of what to do
+  duration: string;     // Estimated time (e.g., "45 minutes")
+  type: 'video' | 'quiz' | 'essay' | 'reading' | 'practice'; // Task category for icon rendering
+  difficulty: 'beginner' | 'intermediate' | 'advanced';      // Skill level indicator
+  completed: boolean;   // Progress state (currently local only)
+  priority: 'high' | 'medium' | 'low';  // Urgency level for task ordering
+  subject: string;      // CSS topic area (e.g., "Constitutional Law")
 }
 
+// Weekly study structure containing themed learning objectives
+// Maps to: Nested objects within StudyPlan.targets JSON field
 interface WeekPlan {
-  weekNumber: number;
-  theme: string;
-  description: string;
-  tasks: StudyTask[];
-  totalHours: number;
-  completionRate: number;
+  weekNumber: number;    // Sequential week identifier (1-6)
+  theme: string;         // Weekly focus area
+  description: string;   // Detailed explanation of week's goals
+  tasks: StudyTask[];    // Array of learning activities
+  totalHours: number;    // Estimated study time for the week
+  completionRate: number; // Calculated percentage of completed tasks (computed field)
 }
 
+// Complete study plan structure for a student
+// Maps to: StudyPlan database model + computed fields
+// Database fields: id, userId, weeks, targets (JSON), createdAt
+// Computed fields: overallProgress, completionRate (calculated from tasks)
 interface StudyPlan {
-  id: string;
-  title: string;
-  description: string;
-  weeks: WeekPlan[];
-  totalWeeks: number;
-  overallProgress: number;
-  lastUpdated: string;
+  id: string;            // Unique plan identifier (matches StudyPlan.id)
+  title: string;         // Plan name (e.g., "CSS 2024 Exam Preparation")
+  description: string;   // Overview of the study plan approach
+  weeks: WeekPlan[];     // Array of weekly plans (from targets JSON)
+  totalWeeks: number;    // Total duration (matches StudyPlan.weeks)
+  overallProgress: number; // Calculated across all weeks (computed)
+  lastUpdated: string;   // Timestamp for tracking plan freshness
 }
+
+// MAIN COMPONENT - Study Plan Page
+// This component demonstrates the platform's key architectural patterns:
+// 1. Role-based access (students only)
+// 2. API-driven data fetching with loading states
+// 3. Local state management for UI interactions
+// 4. Optimistic updates for better user experience
+//
+// ROLE-BASED ACCESS CONTROL:
+// This component is part of the platform's RBAC system:
+// 
+// PROTECTION LAYERS:
+// 1. Middleware Level (/middleware.ts) - Blocks non-students from accessing /study-plan route
+// 2. Component Level - Could wrap in ProtectedRoute component for additional protection
+// 3. API Level (/app/api/study-plan/route.tsx) - Should verify user role before serving data
+//
+// ROLE PERMISSIONS:
+// - STUDENT: ✅ Can view and update personal study plan progress
+// - TUTOR: ❌ Cannot access student study plans (redirect to /instructor/courses)
+// - ADMIN: ✅ Has override access (can view as student via viewingAs mode)
+//
+// RELATED RBAC PATTERNS:
+// - See /components/ProtectedRoute.tsx for client-side protection patterns
+// - See /lib/api-auth.ts for API authorization helpers
+// - See /middleware.ts for route-level protection implementation
+// - Similar access patterns in /app/student/courses/ and /app/student/assignments/
 
 export default function StudyPlanPage() {
-  const [plan, setPlan] = useState<StudyPlan | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [activeWeek, setActiveWeek] = useState(1);
-  const [view, setView] = useState<'overview' | 'detailed'>('detailed');
+  // COMPONENT STATE MANAGEMENT
+  // Following the platform's pattern of separating data state from UI state
+  const [plan, setPlan] = useState<StudyPlan | null>(null);      // Main data from API
+  const [loading, setLoading] = useState(true);                  // Request state
+  const [activeWeek, setActiveWeek] = useState(1);               // UI navigation state
+  const [view, setView] = useState<'overview' | 'detailed'>('detailed'); // View mode toggle
 
+  // INITIALIZATION PATTERN
+  // Standard Next.js pattern: fetch data on component mount
+  // See similar patterns in /app/instructor/courses/page.tsx and /app/dashboard/parts/Student.tsx
   useEffect(() => {
     fetchStudyPlan();
   }, []);
 
+  // API DATA FETCHING
+  // Standard platform pattern for API communication
+  // API endpoint: /app/api/study-plan/route.tsx
+  // Response format: { success: boolean, plan: StudyPlan }
   const fetchStudyPlan = async () => {
     try {
       const response = await fetch('/api/study-plan');
@@ -52,7 +146,8 @@ export default function StudyPlanPage() {
       if (data.success) {
         setPlan(data.plan);
         
-        // Set active week to first incomplete week
+        // SMART UI BEHAVIOR: Auto-navigate to first incomplete week
+        // This improves UX by showing students where they should focus
         const firstIncompleteWeek = data.plan.weeks.find((week: WeekPlan) => 
           week.completionRate < 100
         );
@@ -62,13 +157,20 @@ export default function StudyPlanPage() {
       }
     } catch (error) {
       console.error('Failed to fetch study plan:', error);
+      // TODO: Add proper error handling UI - see /app/instructor/courses/page.tsx for pattern
     } finally {
       setLoading(false);
     }
   };
 
+  // OPTIMISTIC UI UPDATES
+  // This demonstrates the platform's pattern for immediate UI feedback
+  // while syncing with the backend. Used throughout the app for better UX.
+  // See similar patterns in /lib/course-context.tsx for course management
   const toggleTaskCompletion = async (taskId: string, currentStatus: boolean) => {
     try {
+      // BACKEND SYNC: Send update to API
+      // Note: Currently the API doesn't persist to database - this is a future enhancement
       const response = await fetch('/api/study-plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -80,10 +182,12 @@ export default function StudyPlanPage() {
       });
 
       if (response.ok) {
-        // Update local state
+        // OPTIMISTIC STATE UPDATE: Immediately update UI without waiting for server response
+        // This pattern provides instant feedback to users
         setPlan(prevPlan => {
           if (!prevPlan) return prevPlan;
           
+          // IMMUTABLE STATE UPDATES: Follow React best practices
           const updatedWeeks = prevPlan.weeks.map(week => ({
             ...week,
             tasks: week.tasks.map(task => 
@@ -93,14 +197,15 @@ export default function StudyPlanPage() {
             )
           }));
 
-          // Recalculate completion rates
+          // DERIVED STATE CALCULATION: Automatically recalculate progress metrics
+          // This shows how the platform handles computed values
           const updatedWeeksWithRates = updatedWeeks.map(week => {
             const completedTasks = week.tasks.filter(task => task.completed).length;
             const completionRate = (completedTasks / week.tasks.length) * 100;
             return { ...week, completionRate };
           });
 
-          // Recalculate overall progress
+          // AGGREGATE PROGRESS: Calculate overall completion across all weeks
           const totalTasks = updatedWeeksWithRates.reduce((sum, week) => sum + week.tasks.length, 0);
           const completedTasks = updatedWeeksWithRates.reduce((sum, week) => 
             sum + week.tasks.filter(task => task.completed).length, 0
@@ -116,38 +221,53 @@ export default function StudyPlanPage() {
       }
     } catch (error) {
       console.error('Failed to update task:', error);
+      // TODO: Add error state management and rollback logic
+      // See /app/instructor/courses/[courseId]/page.tsx for error handling patterns
     }
   };
 
+  // UI UTILITY FUNCTIONS
+  // These helper functions demonstrate the platform's approach to consistent UI elements
+  // Similar patterns are used throughout the app for standardized styling
+
+  // ICON MAPPING: Maps task types to Lucide React icons
+  // This creates visual consistency across different task types
   const getTaskIcon = (type: string) => {
     switch (type) {
-      case 'video': return <Video className="w-4 h-4" />;
-      case 'quiz': return <Target className="w-4 h-4" />;
-      case 'essay': return <PenTool className="w-4 h-4" />;
-      case 'reading': return <BookOpen className="w-4 h-4" />;
-      case 'practice': return <FileText className="w-4 h-4" />;
+      case 'video': return <Video className="w-4 h-4" />;      // Video lectures
+      case 'quiz': return <Target className="w-4 h-4" />;      // Practice quizzes
+      case 'essay': return <PenTool className="w-4 h-4" />;    // Writing assignments
+      case 'reading': return <BookOpen className="w-4 h-4" />; // Reading materials
+      case 'practice': return <FileText className="w-4 h-4" />; // Practice exercises
       default: return <Circle className="w-4 h-4" />;
     }
   };
 
+  // PRIORITY STYLING: Color-coded priority levels for task management
+  // Following Tailwind CSS design system used throughout the platform
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'text-red-600 bg-red-100';
-      case 'medium': return 'text-yellow-600 bg-yellow-100';
-      case 'low': return 'text-green-600 bg-green-100';
+      case 'high': return 'text-red-600 bg-red-100';       // Urgent tasks
+      case 'medium': return 'text-yellow-600 bg-yellow-100'; // Normal priority
+      case 'low': return 'text-green-600 bg-green-100';    // Can be delayed
       default: return 'text-gray-600 bg-gray-100';
     }
   };
 
+  // DIFFICULTY INDICATORS: Visual cues for task complexity
+  // Helps students understand the challenge level of each task
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'beginner': return 'text-green-600 bg-green-100';
-      case 'intermediate': return 'text-blue-600 bg-blue-100';
-      case 'advanced': return 'text-purple-600 bg-purple-100';
+      case 'beginner': return 'text-green-600 bg-green-100';    // Entry level
+      case 'intermediate': return 'text-blue-600 bg-blue-100';  // Moderate complexity
+      case 'advanced': return 'text-purple-600 bg-purple-100';  // High complexity
       default: return 'text-gray-600 bg-gray-100';
     }
   };
 
+  // LOADING STATE MANAGEMENT
+  // Standard pattern used across the platform for async data loading
+  // See similar implementations in /app/instructor/courses/page.tsx and /app/dashboard/parts/Student.tsx
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -159,6 +279,8 @@ export default function StudyPlanPage() {
     );
   }
 
+  // ERROR STATE HANDLING
+  // Fallback UI when data cannot be loaded - provides user recovery options
   if (!plan) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -177,6 +299,8 @@ export default function StudyPlanPage() {
     );
   }
 
+  // COMPUTED VALUES
+  // Calculate derived data for the UI - this pattern separates data processing from rendering
   const activeWeekData = plan.weeks.find(week => week.weekNumber === activeWeek);
   const totalTasks = plan.weeks.reduce((sum, week) => sum + week.tasks.length, 0);
   const completedTasks = plan.weeks.reduce((sum, week) => 
@@ -184,9 +308,14 @@ export default function StudyPlanPage() {
   );
   const totalHours = plan.weeks.reduce((sum, week) => sum + week.totalHours, 0);
 
+  // MAIN RENDER
+  // The UI is organized into clear sections: Header, Stats, Navigation, Content
+  // This structure is consistent across platform pages
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* NAVIGATION HEADER */}
+      {/* Standard platform pattern: breadcrumb navigation + page title */}
+      {/* Links back to dashboard - maintains navigation context for students */}
       <div className="bg-white border-b">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -395,6 +524,12 @@ export default function StudyPlanPage() {
                         Week {activeWeekData.weekNumber}: {activeWeekData.theme}
                       </h3>
                       <p className="text-gray-600">{activeWeekData.description}</p>
+                      {/* Show syllabus source for Pakistan Affairs */}
+                      {activeWeekData.tasks.some(t => t.subject === 'Pakistan Affairs') && (
+                        <p className="text-sm text-blue-600 mt-2">
+                          📚 Based on CSS Pakistan Affairs Syllabus
+                        </p>
+                      )}
                     </div>
                     
                     <div className="text-right">

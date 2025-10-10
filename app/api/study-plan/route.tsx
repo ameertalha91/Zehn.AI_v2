@@ -1,332 +1,262 @@
+/**
+ * STUDY PLAN API ROUTE - Serves personalized learning plans for CSS exam preparation
+ * 
+ * ARCHITECTURAL ROLE:
+ * This API endpoint demonstrates the platform's standard patterns for:
+ * 1. API route structure in Next.js App Router
+ * 2. Data generation and transformation for frontend consumption
+ * 3. Action-based POST handling for different operations
+ * 4. Future database integration points
+ * 
+ * MODULE RELATIONSHIPS:
+ * - Frontend Consumer: /app/study-plan/page.tsx (main study plan UI)
+ * - Dashboard Integration: /app/dashboard/parts/Student.tsx (summary view)
+ * - Database Model: /prisma/schema.prisma (StudyPlan model)
+ * - Auth Context: Uses platform's role-based access patterns
+ * 
+ * DATA FLOW PATTERN:
+ * Frontend Request → API Route → Data Generation → JSON Response → UI Rendering
+ * 
+ * CURRENT IMPLEMENTATION STATUS:
+ * - ✅ Dynamic plan generation based on courses and syllabus
+ * - ✅ Progress calculation logic
+ * - ✅ Action-based POST handling
+ * - ⚠️  Database persistence (placeholder implementation)
+ * - 🔮 AI-driven adaptive planning (future feature)
+ * 
+ * RELATED FILES TO UNDERSTAND:
+ * - /app/api/courses/route.ts - Similar API structure and patterns
+ * - /lib/auth-context.tsx - User authentication for personalized plans
+ * - /app/api/assignments/route.ts - Task management patterns
+ * - /prisma/schema.prisma - StudyPlan database model
+ */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/db';
+import { verifyAuth } from '@/lib/api-auth';
+import { pakistanAffairsSyllabus, getAllTopicsFlat, getTopicsByPriority } from '@/lib/syllabus/pakistan-affairs';
 
+// TYPE DEFINITIONS - API Response Interfaces
+// These mirror the frontend interfaces but include additional server-side fields
+// Note: In production, these would be imported from a shared types file
+
+// Individual learning task structure
 interface StudyTask {
-  id: string;
-  title: string;
-  description: string;
-  duration: string;
-  type: 'video' | 'quiz' | 'essay' | 'reading' | 'practice';
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  completed: boolean;
-  priority: 'high' | 'medium' | 'low';
-  subject: string;
+  id: string;           // Unique task identifier for progress tracking
+  title: string;        // Task display name
+  description: string;  // Detailed task instructions
+  duration: string;     // Estimated completion time
+  type: 'video' | 'quiz' | 'essay' | 'reading' | 'practice'; // Task category
+  difficulty: 'beginner' | 'intermediate' | 'advanced';      // Complexity level
+  completed: boolean;   // Progress state (future: persisted in database)
+  priority: 'high' | 'medium' | 'low';  // Task urgency for sorting
+  subject: string;      // CSS subject area
 }
 
+// Weekly study plan structure
 interface WeekPlan {
-  weekNumber: number;
-  theme: string;
-  description: string;
-  tasks: StudyTask[];
-  totalHours: number;
-  completionRate: number;
+  weekNumber: number;    // Sequential week identifier
+  theme: string;         // Weekly learning focus
+  description: string;   // Week objectives
+  tasks: StudyTask[];    // Learning activities
+  totalHours: number;    // Estimated study time
+  completionRate: number; // Calculated progress percentage
 }
 
+// Complete study plan for API response
 interface StudyPlan {
-  id: string;
-  userId: string;
-  title: string;
-  description: string;
-  weeks: WeekPlan[];
-  totalWeeks: number;
-  overallProgress: number;
-  createdAt: string;
-  lastUpdated: string;
+  id: string;            // Plan identifier (future: database primary key)
+  userId: string;        // Associated student (future: from auth context)
+  title: string;         // Plan display name
+  description: string;   // Plan overview
+  weeks: WeekPlan[];     // Weekly breakdown
+  totalWeeks: number;    // Plan duration
+  overallProgress: number; // Aggregate completion percentage
+  createdAt: string;     // Plan creation timestamp
+  lastUpdated: string;   // Last modification timestamp
 }
 
-// Enhanced study plan with detailed tasks and progress tracking
-function generateEnhancedStudyPlan(): StudyPlan {
-  const weeks: WeekPlan[] = [
-    {
-      weekNumber: 1,
-      theme: "Constitutional Foundations",
-      description: "Master Pakistan's constitutional development and basic governance structures",
-      totalHours: 12,
-      completionRate: 0,
-      tasks: [
-        {
-          id: "w1-t1",
-          title: "Pakistan Affairs: Constitutional Timeline",
-          description: "Study constitutional development from 1947-1973",
-          duration: "2 hours",
-          type: "video",
-          difficulty: "intermediate",
-          completed: false,
-          priority: "high",
-          subject: "Pakistan Studies"
-        },
-        {
-          id: "w1-t2",
-          title: "Constitutional MCQs Practice Set A",
-          description: "Multiple choice questions on constitutional basics",
-          duration: "30 minutes",
-          type: "quiz",
-          difficulty: "beginner",
-          completed: false,
-          priority: "high",
-          subject: "Pakistan Studies"
-        },
-        {
-          id: "w1-t3",
-          title: "Essay Outline: Federalism in Pakistan",
-          description: "Structure and practice essay writing on federalism",
-          duration: "45 minutes",
-          type: "essay",
-          difficulty: "intermediate",
-          completed: false,
-          priority: "medium",
-          subject: "Pakistan Studies"
-        },
-        {
-          id: "w1-t4",
-          title: "Reading: Government of India Act 1935",
-          description: "Read and analyze key provisions",
-          duration: "1 hour",
-          type: "reading",
-          difficulty: "advanced",
-          completed: false,
-          priority: "medium",
-          subject: "Pakistan Studies"
-        }
-      ]
-    },
-    {
-      weekNumber: 2,
-      theme: "International Relations Fundamentals",
-      description: "Understanding Pakistan's foreign policy and international alignments",
-      totalHours: 14,
-      completionRate: 0,
-      tasks: [
-        {
-          id: "w2-t1",
-          title: "IR: Cold War & Pakistan's Alignment",
-          description: "Pakistan's role during the Cold War era",
-          duration: "2.5 hours",
-          type: "video",
-          difficulty: "advanced",
-          completed: false,
-          priority: "high",
-          subject: "International Relations"
-        },
-        {
-          id: "w2-t2",
-          title: "Foreign Policy MCQs Set B",
-          description: "Questions on Pakistan's foreign relations",
-          duration: "30 minutes",
-          type: "quiz",
-          difficulty: "intermediate",
-          completed: false,
-          priority: "high",
-          subject: "International Relations"
-        },
-        {
-          id: "w2-t3",
-          title: "Essay: Pakistan-China Relations",
-          description: "Write comprehensive essay on bilateral ties",
-          duration: "1 hour",
-          type: "essay",
-          difficulty: "advanced",
-          completed: false,
-          priority: "high",
-          subject: "International Relations"
-        }
-      ]
-    },
-    {
-      weekNumber: 3,
-      theme: "Current Affairs & Policy Analysis",
-      description: "Contemporary issues and policy developments",
-      totalHours: 16,
-      completionRate: 0,
-      tasks: [
-        {
-          id: "w3-t1",
-          title: "Current Affairs: Economy & Energy Policy",
-          description: "Recent economic developments and energy crisis",
-          duration: "2 hours",
-          type: "video",
-          difficulty: "advanced",
-          completed: false,
-          priority: "high",
-          subject: "Current Affairs"
-        },
-        {
-          id: "w3-t2",
-          title: "Mock Essay: Economic Challenges",
-          description: "Timed essay on Pakistan's economic issues",
-          duration: "40 minutes",
-          type: "essay",
-          difficulty: "advanced",
-          completed: false,
-          priority: "high",
-          subject: "Current Affairs"
-        },
-        {
-          id: "w3-t3",
-          title: "Weakness Review Session",
-          description: "Review and strengthen weak topics from weeks 1-2",
-          duration: "1.5 hours",
-          type: "practice",
-          difficulty: "intermediate",
-          completed: false,
-          priority: "medium",
-          subject: "General"
-        }
-      ]
-    },
-    {
-      weekNumber: 4,
-      theme: "Islamic Studies & Ethics",
-      description: "Islamic governance principles and contemporary thought",
-      totalHours: 13,
-      completionRate: 0,
-      tasks: [
-        {
-          id: "w4-t1",
-          title: "Islamic Studies: Ethics & Governance",
-          description: "Islamic principles in modern governance",
-          duration: "2 hours",
-          type: "video",
-          difficulty: "intermediate",
-          completed: false,
-          priority: "high",
-          subject: "Islamic Studies"
-        },
-        {
-          id: "w4-t2",
-          title: "Islamic History MCQs Set C",
-          description: "Questions on Islamic civilization and history",
-          duration: "30 minutes",
-          type: "quiz",
-          difficulty: "intermediate",
-          completed: false,
-          priority: "medium",
-          subject: "Islamic Studies"
-        },
-        {
-          id: "w4-t3",
-          title: "Structured Notes: Khilafat Movement",
-          description: "Detailed notes on historical movement",
-          duration: "1 hour",
-          type: "reading",
-          difficulty: "intermediate",
-          completed: false,
-          priority: "medium",
-          subject: "Islamic Studies"
-        }
-      ]
-    },
-    {
-      weekNumber: 5,
-      theme: "General Knowledge & Sciences",
-      description: "Science, technology, and general awareness",
-      totalHours: 11,
-      completionRate: 0,
-      tasks: [
-        {
-          id: "w5-t1",
-          title: "General Science: Environment & Technology",
-          description: "Current developments in science and technology",
-          duration: "2 hours",
-          type: "video",
-          difficulty: "beginner",
-          completed: false,
-          priority: "medium",
-          subject: "General Science"
-        },
-        {
-          id: "w5-t2",
-          title: "Past Paper Questions Practice",
-          description: "Solve previous year CSS questions",
-          duration: "1 hour",
-          type: "practice",
-          difficulty: "advanced",
-          completed: false,
-          priority: "high",
-          subject: "General"
-        },
-        {
-          id: "w5-t3",
-          title: "Oral Practice: Current Issues",
-          description: "Practice speaking on contemporary topics",
-          duration: "45 minutes",
-          type: "practice",
-          difficulty: "intermediate",
-          completed: false,
-          priority: "medium",
-          subject: "General"
-        }
-      ]
-    },
-    {
-      weekNumber: 6,
-      theme: "Final Preparation & Mock Tests",
-      description: "Comprehensive review and exam simulation",
-      totalHours: 18,
-      completionRate: 0,
-      tasks: [
-        {
-          id: "w6-t1",
-          title: "Full-Length Mock Examination",
-          description: "Complete CSS mock exam under timed conditions",
-          duration: "3 hours",
-          type: "practice",
-          difficulty: "advanced",
-          completed: false,
-          priority: "high",
-          subject: "General"
-        },
-        {
-          id: "w6-t2",
-          title: "Review & Strategy Refinement",
-          description: "Analyze mock results and refine approach",
-          duration: "2 hours",
-          type: "practice",
-          difficulty: "intermediate",
-          completed: false,
-          priority: "high",
-          subject: "General"
-        },
-        {
-          id: "w6-t3",
-          title: "Interview Speech Preparation",
-          description: "Prepare for CSS interview and viva",
-          duration: "1.5 hours",
-          type: "practice",
-          difficulty: "advanced",
-          completed: false,
-          priority: "high",
-          subject: "General"
-        }
-      ]
+// DYNAMIC STUDY PLAN GENERATION
+// Generates personalized study plans based on:
+// 1. Student's enrolled courses
+// 2. CSS syllabus topics
+// 3. Course-topic mappings
+// 4. Priority and time estimates
+async function generateDynamicStudyPlan(userId: string): Promise<StudyPlan> {
+  try {
+    // Get student's enrolled courses
+    const enrollments = await prisma.enrollment.findMany({
+      where: { userId },
+      include: {
+        klass: true
+      }
+    });
+
+    // If no enrollments, generate a default Pakistan Affairs plan
+    if (enrollments.length === 0) {
+      return generatePakistanAffairsDefaultPlan();
     }
-  ];
 
-  // Calculate overall progress
-  const totalTasks = weeks.reduce((sum, week) => sum + week.tasks.length, 0);
-  const completedTasks = weeks.reduce((sum, week) => 
-    sum + week.tasks.filter(task => task.completed).length, 0
-  );
-  const overallProgress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+    // For now, generate a simplified plan based on enrolled courses
+    // TODO: Once database is migrated, use actual topic mappings
+    const coursePlans: WeekPlan[] = [];
+    let weekNum = 1;
+    
+    // Create simplified course-based weeks
+    enrollments.forEach(enrollment => {
+      const course = enrollment.klass;
+      const tasks: StudyTask[] = [];
+      
+      // Create general study tasks for each course
+      tasks.push({
+        id: `course-${course.id}-study`,
+        title: `Study: ${course.name}`,
+        description: course.description || `Comprehensive study of ${course.name} content`,
+        duration: '3 hours',
+        type: 'reading',
+        difficulty: 'intermediate',
+        completed: false,
+        priority: 'high',
+        subject: course.name
+      });
+      
+      tasks.push({
+        id: `course-${course.id}-quiz`,
+        title: `Practice Quiz: ${course.name}`,
+        description: `Test your understanding of ${course.name} concepts`,
+        duration: '1 hour',
+        type: 'quiz',
+        difficulty: 'intermediate',
+        completed: false,
+        priority: 'medium',
+        subject: course.name
+      });
+      
+      coursePlans.push({
+        weekNumber: weekNum++,
+        theme: course.name,
+        description: `Focus on ${course.name} core concepts and practice`,
+        tasks,
+        totalHours: 4,
+        completionRate: 0
+      });
+    });
+    
+    // If enrolled in courses but less than 6 weeks, add Pakistan Affairs topics
+    const weeks = coursePlans.length >= 6 
+      ? coursePlans.slice(0, 6) 
+      : [...coursePlans, ...generatePakistanAffairsDefaultPlan().weeks.slice(0, 6 - coursePlans.length)];
+    
+    // Calculate progress (would be from database in production)
+    const totalTasks = weeks.reduce((sum, week) => sum + week.tasks.length, 0);
+    const completedTasks = 0; // TODO: Get from database
+    const overallProgress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
 
+    return {
+      id: `plan-${userId}`,
+      userId,
+      title: "Your Personalized CSS Study Plan",
+      description: `Dynamic study plan based on your ${enrollments.length} enrolled courses`,
+      weeks,
+      totalWeeks: weeks.length,
+      overallProgress,
+      createdAt: new Date().toISOString(),
+      lastUpdated: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('Error generating dynamic study plan:', error);
+    // Fallback to default plan
+    return generatePakistanAffairsDefaultPlan();
+  }
+}
+
+
+// Fallback function for default Pakistan Affairs plan
+function generatePakistanAffairsDefaultPlan(): StudyPlan {
+  // Use syllabus to generate a structured plan
+  const topics = pakistanAffairsSyllabus.topics;
+  const weeks: WeekPlan[] = [];
+  
+  // Group topics into 6-week plan
+  const topicsPerWeek = Math.ceil(topics.length / 6);
+  
+  for (let weekNum = 1; weekNum <= 6; weekNum++) {
+    const startIdx = (weekNum - 1) * topicsPerWeek;
+    const endIdx = Math.min(startIdx + topicsPerWeek, topics.length);
+    const weekTopics = topics.slice(startIdx, endIdx);
+    
+    if (weekTopics.length === 0) continue;
+    
+    const weekTasks: StudyTask[] = [];
+    let totalHours = 0;
+    
+    weekTopics.forEach(topic => {
+      // Add main topic study task
+      weekTasks.push({
+        id: `week${weekNum}-${topic.id}-study`,
+        title: topic.title,
+        description: `Comprehensive study of ${topic.title} including all subtopics`,
+        duration: `${topic.estimatedHours || 2} hours`,
+        type: 'reading',
+        difficulty: topic.priority === 'high' ? 'advanced' : 'intermediate',
+        completed: false,
+        priority: topic.priority,
+        subject: 'Pakistan Affairs'
+      });
+      
+      // Add quiz for each topic
+      weekTasks.push({
+        id: `week${weekNum}-${topic.id}-quiz`,
+        title: `MCQs: ${topic.title}`,
+        description: `Practice multiple choice questions on ${topic.title}`,
+        duration: '30 minutes',
+        type: 'quiz',
+        difficulty: 'intermediate',
+        completed: false,
+        priority: 'medium',
+        subject: 'Pakistan Affairs'
+      });
+      
+      totalHours += (topic.estimatedHours || 2) + 0.5;
+    });
+    
+    weeks.push({
+      weekNumber: weekNum,
+      theme: weekTopics.map(t => t.title).join(' & '),
+      description: `Focus on ${weekTopics[0].title}${weekTopics.length > 1 ? ' and related topics' : ''}`,
+      tasks: weekTasks,
+      totalHours: Math.round(totalHours),
+      completionRate: 0
+    });
+  }
+  
   return {
-    id: "plan-1",
-    userId: "student-1",
-    title: "CSS 2025 Comprehensive Study Plan",
-    description: "6-week intensive preparation program covering all major CSS subjects with progress tracking",
+    id: 'default-pak-affairs-plan',
+    userId: 'default',
+    title: 'CSS Pakistan Affairs Complete Study Plan',
+    description: '6-week comprehensive preparation covering all CSS Pakistan Affairs syllabus topics',
     weeks,
-    totalWeeks: 6,
-    overallProgress,
+    totalWeeks: weeks.length,
+    overallProgress: 0,
     createdAt: new Date().toISOString(),
     lastUpdated: new Date().toISOString()
   };
 }
 
+// GET ENDPOINT - Retrieve Study Plan
+// Standard platform pattern for data fetching endpoints
 export async function GET(req: NextRequest) {
   try {
-    const plan = generateEnhancedStudyPlan();
+    // Get authenticated user
+    const user = await verifyAuth(req);
+    const userId = user?.id || 'default';
+    
+    // Generate dynamic plan based on enrolled courses
+    const plan = await generateDynamicStudyPlan(userId);
+    
     return NextResponse.json({ success: true, plan });
   } catch (error) {
+    console.error('Study plan fetch error:', error);
     return NextResponse.json({ 
       success: false, 
       error: 'Failed to fetch study plan' 
@@ -334,17 +264,28 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// POST ENDPOINT - Handle Study Plan Actions
+// Demonstrates the platform's action-based API pattern
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     
-    // Handle different POST actions
+    // ACTION PATTERN: Multiple operations through single endpoint
+    // This pattern is used throughout the platform for related operations
+    
     if (body.action === 'update-task') {
-      // Update task completion status
+      // TASK COMPLETION TRACKING
+      // Future: Persist to database with user association
       const { taskId, completed } = body;
       
-      // In a real app, you'd update the database
-      // For now, return success response
+      // TODO: Database update - implement with Prisma
+      // await prisma.studyPlan.update({
+      //   where: { userId },
+      //   data: { 
+      //     targets: updateTaskInJson(existingPlan.targets, taskId, completed)
+      //   }
+      // });
+      
       return NextResponse.json({ 
         success: true, 
         message: 'Task updated successfully',
@@ -354,12 +295,22 @@ export async function POST(req: NextRequest) {
     }
     
     if (body.action === 'generate-adaptive') {
-      // Generate adaptive plan based on performance
+      // ADAPTIVE LEARNING FEATURE
+      // Future AI integration point for personalized study plans
       const { performanceData, weakAreas } = body;
-      const plan = generateEnhancedStudyPlan();
       
-      // In a real implementation, you'd use AI to adapt the plan
-      // based on quiz scores and identified weak areas
+      // Get authenticated user
+      const user = await verifyAuth(req);
+      const userId = user?.id || 'default';
+      
+      // Generate plan (currently same as regular plan, but would be adaptive in future)
+      const plan = await generateDynamicStudyPlan(userId);
+      
+      // TODO: AI Integration
+      // - Analyze quiz performance from /app/api/quizzes/
+      // - Identify weak subject areas
+      // - Generate personalized task recommendations
+      // - Adjust difficulty levels based on progress
       
       return NextResponse.json({ 
         success: true, 
@@ -368,11 +319,14 @@ export async function POST(req: NextRequest) {
       });
     }
     
-    // Default: return current plan
-    const plan = generateEnhancedStudyPlan();
+    // DEFAULT: Return current plan
+    const user = await verifyAuth(req);
+    const userId = user?.id || 'default';
+    const plan = await generateDynamicStudyPlan(userId);
     return NextResponse.json({ success: true, plan });
     
   } catch (error) {
+    console.error('Study plan action error:', error);
     return NextResponse.json({ 
       success: false, 
       error: 'Failed to process request' 

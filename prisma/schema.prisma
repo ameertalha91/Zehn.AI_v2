@@ -74,6 +74,7 @@ model Class {
   students    Enrollment[] // Student enrollments
   messages    Message[]    // Course chat messages
   assignments Assignment[] // Course assignments
+  topicMappings CourseTopicMapping[] // Syllabus topics covered
   createdAt   DateTime     @default(now())
   updatedAt   DateTime?    @default(now())
 }
@@ -148,6 +149,37 @@ model StudyPlan {
   weeks     Int
   targets   String // JSON of tasks by week
   createdAt DateTime @default(now())
+}
+
+// CSS SYLLABUS MANAGEMENT
+// Tracks official CSS exam syllabus topics
+model SyllabusTopic {
+  id              String   @id @default(cuid())
+  topicId         String   @unique // e.g., "pa-1.1"
+  subject         String   // e.g., "pakistan-affairs"
+  title           String   // Topic title
+  description     String?  // Topic description
+  parentTopicId   String?  // For subtopics
+  priority        String   // high, medium, low
+  estimatedHours  Int?     // Study hours needed
+  orderIndex      Int      // For ordering topics
+  createdAt       DateTime @default(now())
+  
+  // Relations
+  courseMappings  CourseTopicMapping[]
+}
+
+// Maps courses to syllabus topics they cover
+model CourseTopicMapping {
+  id             String         @id @default(cuid())
+  classId        String         // Course/Class ID
+  topicId        String         // SyllabusTopic ID
+  class          Class          @relation(fields: [classId], references: [id])
+  syllabusTopic  SyllabusTopic  @relation(fields: [topicId], references: [id])
+  coverageDepth  String?        // basic, intermediate, advanced
+  createdAt      DateTime       @default(now())
+  
+  @@unique([classId, topicId])
 }
 
 model Message {
