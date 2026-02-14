@@ -47,3 +47,4 @@ See [`MIGRATION_GUIDE.md`](./MIGRATION_GUIDE.md) for detailed deployment instruc
 
 > Replace stubs with services for: AI RAG answers, video edit/transcript, OCR, auto‑grading, and messaging.
 
+
