@@ -49,7 +49,7 @@ export default function AdminCoursesPage() {
     if (user) {
       fetchCourses('admin');
     }
-  }, [user]);
+  }, [user, fetchCourses]);
 
   const allCourses = getAllCourses();
   const instructors = [...new Set(allCourses.map(course => course.instructor))];
@@ -180,7 +180,7 @@ export default function AdminCoursesPage() {
         name: formData.get('name') as string,
         description: formData.get('description') as string,
         maxStudents: parseInt(formData.get('maxStudents') as string),
-        status: formData.get('status') as string,
+        status: formData.get('status') as 'draft' | 'published' | 'archived',
         isFeatured: formData.get('isFeatured') === 'on',
         platformRecommendation: formData.get('platformRecommendation') === 'on',
         revenueSharing: parseFloat(formData.get('revenueSharing') as string) || 0

@@ -130,6 +130,7 @@ export default function CourseLearningPage({ params }: CourseLearningPageProps) 
     };
 
     fetchCourse();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.courseId, user]);
 
   const progress = getStudentProgress(params.courseId);
@@ -185,8 +186,8 @@ export default function CourseLearningPage({ params }: CourseLearningPageProps) 
   const getNextLecture = () => {
     if (!course?.modules) return null;
     
-    for (const module of course.modules) {
-      for (const lecture of module.lectures) {
+    for (const mod of course.modules) {
+      for (const lecture of mod.lectures) {
         if (!completedLectures.includes(lecture.id)) {
           return lecture;
         }
@@ -198,8 +199,8 @@ export default function CourseLearningPage({ params }: CourseLearningPageProps) 
   const getPreviousLecture = () => {
     if (!course?.modules || !currentLecture) return null;
     
-    const allLectures = course.modules.flatMap(module => module.lectures);
-    const currentIndex = allLectures.findIndex(lecture => lecture.id === currentLecture.id);
+    const allLectures = course.modules.flatMap((mod: { lectures: { id: string }[] }) => mod.lectures);
+    const currentIndex = allLectures.findIndex((lecture: { id: string }) => lecture.id === currentLecture.id);
     
     if (currentIndex > 0) {
       return allLectures[currentIndex - 1];
@@ -226,7 +227,7 @@ export default function CourseLearningPage({ params }: CourseLearningPageProps) 
           <div className="text-center py-12">
             <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">Course not found</h3>
-            <p className="text-gray-600 mb-6">The course you're looking for doesn't exist or has been removed.</p>
+            <p className="text-gray-600 mb-6">The course you&apos;re looking for doesn&apos;t exist or has been removed.</p>
             <button
               onClick={() => window.location.href = '/student/courses'}
               className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"

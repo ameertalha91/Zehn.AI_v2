@@ -69,12 +69,15 @@ async function getAssignmentsWithSubmissionStatus(classId: string, studentId?: s
 
   // Transform to include submission status directly in assignment object
   if (studentId) {
-    return assignments.map(assignment => ({
-      ...assignment,
-      submissionStatus: assignment.submissions[0]?.status || null,
-      submittedAt: assignment.submissions[0]?.submittedAt || null,
-      feedback: assignment.submissions[0]?.feedback || null
-    }));
+    return assignments.map(assignment => {
+      const sub = assignment.submissions[0];
+      return {
+        ...assignment,
+        submissionStatus: sub?.status || null,
+        submittedAt: sub?.submittedAt || null,
+        feedback: sub && 'feedback' in sub ? (sub as { feedback: unknown }).feedback : null
+      };
+    });
   }
 
   return assignments;

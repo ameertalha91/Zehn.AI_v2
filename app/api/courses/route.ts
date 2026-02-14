@@ -64,7 +64,7 @@ const transformCourseData = (course: any) => ({
   modules: [{
     id: 'default-module',
     title: 'Course Content',
-    lectures: (course.lectures || []).map(lecture => ({
+    lectures: (course.lectures || []).map((lecture: { id: string; title: string; videoUrl: string | null; transcript: string | null }) => ({
       id: lecture.id,
       title: lecture.title,
       youtubeUrl: lecture.videoUrl,

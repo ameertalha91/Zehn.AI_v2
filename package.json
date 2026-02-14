@@ -4,14 +4,24 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npx prisma generate && (npx update-browserslist-db@latest || true) && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "npx prisma generate",
+    "db:push": "npx prisma db push",
+    "db:migrate": "npx prisma migrate dev",
+    "db:studio": "npx prisma studio",
+    "migrate:production": "bash scripts/migrate-production.sh",
+    "migrate:interactive": "node scripts/run-migration.js",
+    "vercel:setup": "bash scripts/setup-vercel.sh",
+    "setup:env": "bash scripts/setup-env.sh",
+    "vercel:add-env": "bash scripts/add-vercel-env.sh"
   },
   "dependencies": {
     "@prisma/client": "^6.15.0",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^3.0.2",
+    "dotenv": "^16.4.5",
     "lucide-react": "^0.542.0",
     "next": "14.2.5",
     "openai": "^5.16.0",
@@ -30,6 +40,7 @@
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.5",
     "postcss": "^8",
+    "prisma": "^6.15.0",
     "tailwindcss": "^3.3.0",
     "typescript": "5.4.5"
   }

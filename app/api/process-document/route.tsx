@@ -5,12 +5,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
-let pdfParse;
+let pdfParse: ((data: Buffer) => Promise<{ text: string; numpages?: number }>) | undefined;
 try {
   pdfParse = require('pdf-parse/lib/pdf-parse.js');
   console.log('PDF parse module loaded successfully');
 } catch (e) {
   console.error('PDF parse import error:', e);
+  pdfParse = undefined;
 }
 
 interface Chunk {
@@ -160,7 +161,7 @@ export async function POST(req: NextRequest) {
       }
 
       const data = await pdfParse(pdfBuffer);
-      console.log('Parse successful:', { pages: data.numpages });
+      console.log('Parse successful:', { pages: data.numpages ?? 'unknown' });
 
       if (action === 'search' && query) {
         const pdfText = data.text;
@@ -172,7 +173,7 @@ export async function POST(req: NextRequest) {
         chunks = filterOutTableOfContents(chunks);
         
         // Search and score chunks
-        const searchTerms = query.toLowerCase().split(/\s+/).filter(term => term.length > 2);
+        const searchTerms = query.toLowerCase().split(/\s+/).filter((term: string) => term.length > 2);
         
         const scoredChunks = chunks.map(chunk => ({
           ...chunk,
@@ -229,7 +230,7 @@ export async function POST(req: NextRequest) {
       console.error('Parse error:', parseError);
       return NextResponse.json({ 
         success: false, 
-        error: `Parse error: ${parseError.message}` 
+        error: `Parse error: ${parseError instanceof Error ? parseError.message : String(parseError)}` 
       });
     }
     

@@ -5,11 +5,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
-let pdfParse;
+let pdfParse: ((data: Buffer) => Promise<{ text: string }>) | undefined;
 try {
   pdfParse = require('pdf-parse/lib/pdf-parse.js');
 } catch (e) {
   console.error('PDF parse import error:', e);
+  pdfParse = undefined;
 }
 
 export async function POST(req: NextRequest) {
@@ -23,6 +24,9 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    if (!pdfParse) {
+      return NextResponse.json({ success: false, error: 'PDF parser not available' }, { status: 503 });
+    }
     const pdfBuffer = fs.readFileSync(sampleQuestionsPath);
     const data = await pdfParse(pdfBuffer);
     
@@ -91,6 +95,9 @@ export async function GET() {
       });
     }
 
+    if (!pdfParse) {
+      return NextResponse.json({ success: false, error: 'PDF parser not available' }, { status: 503 });
+    }
     const pdfBuffer = fs.readFileSync(sampleQuestionsPath);
     const data = await pdfParse(pdfBuffer);
     
@@ -102,11 +109,11 @@ export async function GET() {
       questions: extractedQuestions.slice(0, 5),
       total: extractedQuestions.length
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error processing sample questions:', error);
     return NextResponse.json({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : String(error)
     }, { status: 500 });
   }
 }

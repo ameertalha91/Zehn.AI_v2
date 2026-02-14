@@ -7,6 +7,7 @@ export interface AuthorizedUser {
   role: string;
   isAdmin?: boolean;
   viewingAs?: string;
+  centerId?: string;
 }
 
 export async function verifyAuth(request: NextRequest): Promise<AuthorizedUser | null> {

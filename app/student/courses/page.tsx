@@ -44,7 +44,8 @@ export default function StudentCoursesPage() {
       fetchCourses('student');
       fetchEnrollments();
     }
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchEnrollments not memoized
+  }, [user, fetchCourses]);
 
   const enrolledCourses = getEnrolledCourses();
   const enrolledCourseIds = enrolledCourses.map(course => course.id);
@@ -317,7 +318,7 @@ export default function StudentCoursesPage() {
               <div className="text-center py-12">
                 <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No enrolled courses</h3>
-                <p className="text-gray-600 mb-6">You haven't enrolled in any courses yet.</p>
+                <p className="text-gray-600 mb-6">You haven&apos;t enrolled in any courses yet.</p>
                 <button
                   onClick={() => setActiveTab('catalog')}
                   className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"

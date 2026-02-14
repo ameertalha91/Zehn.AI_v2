@@ -5,7 +5,7 @@ import YouTube from 'react-youtube';
 import { Play, Pause, Volume2, VolumeX, Clock, Brain, CheckCircle, XCircle, SkipForward } from 'lucide-react';
 
 const VideoQuizComponent = ({ videoId = 'vxCnkM48zPY' }: { videoId?: string }) => {
-  const [player, setPlayer] = useState(null);
+  const [player, setPlayer] = useState<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -17,16 +17,17 @@ const VideoQuizComponent = ({ videoId = 'vxCnkM48zPY' }: { videoId?: string }) =
   const [quizHistory, setQuizHistory] = useState([]);
   const [isLoadingQuiz, setIsLoadingQuiz] = useState(false);
   const [lastQuizTime, setLastQuizTime] = useState(0);
-  const [quizError, setQuizError] = useState(null);
+  const [quizError, setQuizError] = useState<string | null>(null);
   const [videoTitle, setVideoTitle] = useState('');
-  const [extractedKeywords, setExtractedKeywords] = useState([]);
+  const [extractedKeywords, setExtractedKeywords] = useState<string[]>([]);
 
-  const onReady = (event) => {
-    setPlayer(event.target);
-    setDuration(event.target.getDuration());
+  const onReady = (event: { target: unknown }) => {
+    const target = event.target as { getDuration: () => number; getVideoData: () => { title: string } };
+    setPlayer(target);
+    setDuration(target.getDuration());
     
     // Get video title and extract keywords
-    const title = event.target.getVideoData().title;
+    const title = target.getVideoData().title;
     setVideoTitle(title);
     const keywords = extractKeywordsFromTitle(title);
     setExtractedKeywords(keywords);
@@ -34,7 +35,7 @@ const VideoQuizComponent = ({ videoId = 'vxCnkM48zPY' }: { videoId?: string }) =
     console.log('Extracted keywords:', keywords);
   };
 
-  const onStateChange = (event) => {
+  const onStateChange = (event: { data: number; target: { getCurrentTime: () => number } }) => {
     setIsPlaying(event.data === 1);
     setCurrentTime(event.target.getCurrentTime());
   };
@@ -67,6 +68,7 @@ const VideoQuizComponent = ({ videoId = 'vxCnkM48zPY' }: { videoId?: string }) =
     };
     
     checkTranscript();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -88,9 +90,10 @@ const VideoQuizComponent = ({ videoId = 'vxCnkM48zPY' }: { videoId?: string }) =
     }, 1000);
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player, lastQuizTime, showQuiz]);
 
-  const extractKeywordsFromTitle = (title) => {
+  const extractKeywordsFromTitle = (title: string) => {
     // Remove common stop words and extract meaningful keywords
     const stopWords = ['the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'part', 'episode', 'lecture', 'class'];
     
@@ -102,7 +105,7 @@ const VideoQuizComponent = ({ videoId = 'vxCnkM48zPY' }: { videoId?: string }) =
       .slice(0, 5); // Take first 5 meaningful words
   };
 
-  const triggerQuiz = async (currentVideoTime) => {
+  const triggerQuiz = async (currentVideoTime: number) => {
     console.log('Triggering quiz at time:', currentVideoTime);
     console.log('Video ID being sent:', videoId);
     
@@ -151,7 +154,7 @@ const VideoQuizComponent = ({ videoId = 'vxCnkM48zPY' }: { videoId?: string }) =
       }
     } catch (error) {
       console.error('Error generating quiz:', error);
-      setQuizError(error.message);
+      setQuizError(error instanceof Error ? error.message : String(error));
       
       // Auto-close after showing error
       setTimeout(() => {
@@ -184,7 +187,7 @@ const VideoQuizComponent = ({ videoId = 'vxCnkM48zPY' }: { videoId?: string }) =
     }
   };
 
-  const handleSeek = (e) => {
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
     if (player) {
       const rect = e.currentTarget.getBoundingClientRect();
       const pos = (e.clientX - rect.left) / rect.width;

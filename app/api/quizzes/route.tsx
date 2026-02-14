@@ -37,7 +37,6 @@ export async function POST(req:Request){
   const quiz = await db.quiz.create({ 
     data: { 
       classId: klass!.id, 
-      title,
       questions: defaultQuestions,
       videoId: defaultVideo.id,
       timeMarker: 0

@@ -47,6 +47,7 @@ export default function AssignmentSubmissions() {
   useEffect(() => {
     fetchAssignment();
     fetchSubmissions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assignmentId]);
 
   const fetchAssignment = async () => {

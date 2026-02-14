@@ -228,7 +228,7 @@ export default function CognitiveAssistant() {
                 <ul className="text-sm text-teal-800 space-y-1">
                   <li>• Ask specific questions about CSS subjects</li>
                   <li>• Include time periods or events for detailed analysis</li>
-                  <li>• Use analytical terms like "evaluate," "assess," or "compare"</li>
+                  <li>• Use analytical terms like &quot;evaluate,&quot; &quot;assess,&quot; or &quot;compare&quot;</li>
                   <li>• Responses follow structured academic format</li>
                 </ul>
               </div>

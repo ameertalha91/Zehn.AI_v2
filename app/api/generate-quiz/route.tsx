@@ -5,12 +5,13 @@ import fs from 'fs';
 import path from 'path';
 
 // Fix the pdf-parse import - use the same method that works in process-document
-let pdfParse;
+let pdfParse: ((data: Buffer) => Promise<{ text: string }>) | undefined;
 try {
   pdfParse = require('pdf-parse/lib/pdf-parse.js');
   console.log('PDF parse module loaded successfully');
 } catch (e) {
   console.error('PDF parse import error:', e);
+  pdfParse = undefined;
 }
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -74,7 +75,7 @@ Create 3 new CSS exam-style questions that:
     console.log('AI response:', content);
     
     // Clean the response to handle any markdown formatting
-    let cleanContent = content.trim();
+    let cleanContent = (content ?? '').trim();
     if (cleanContent.startsWith('```json')) {
       cleanContent = cleanContent.replace(/```json\s*/, '').replace(/```\s*$/, '');
     }
@@ -132,8 +133,8 @@ async function loadSampleQuestions() {
     console.log(`Loaded ${sampleQuestions.length} sample questions from PDF`);
   } catch (error) {
     console.error('Detailed error loading sample questions:', {
-      message: error.message,
-      stack: error.stack
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
     });
     sampleQuestions = [];
   }
@@ -225,7 +226,7 @@ function findMatchingQuestions(keywords: string[]) {
         }
         
         // Score for keyword matches
-        question.keywords.forEach(qKeyword => {
+        question.keywords.forEach((qKeyword: string) => {
           if (qKeyword.toLowerCase().includes(keyword.toLowerCase()) || 
               keyword.toLowerCase().includes(qKeyword.toLowerCase())) {
             score += 1;

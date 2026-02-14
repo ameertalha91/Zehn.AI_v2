@@ -70,7 +70,7 @@ async function generateQuestionsUsingAI(keywords: string[]) {
       temperature: 0.7
     });
     
-    const result = JSON.parse(response.choices[0].message.content);
+    const result = JSON.parse(response.choices[0].message.content ?? '{}');
     return result.questions || [];
   } catch (error) {
     console.error('Error generating questions:', error);

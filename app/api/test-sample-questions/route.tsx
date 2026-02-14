@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-const pdfParse = require('pdf-parse');
 
 export async function GET() {
   try {
@@ -14,7 +13,8 @@ export async function GET() {
       });
     }
 
-    // Read the PDF
+    // Dynamic require to avoid pdf-parse loading test files at build time
+    const pdfParse = require('pdf-parse/lib/pdf-parse.js');
     const pdfBuffer = fs.readFileSync(pdfPath);
     const data = await pdfParse(pdfBuffer);
     

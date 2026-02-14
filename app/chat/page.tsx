@@ -94,11 +94,11 @@ export default function Chat() {
       
     } catch (error) {
       console.error('Detailed error:', {
-        message: error.message,
-        stack: error.stack,
-        type: error.constructor.name
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        type: error instanceof Error ? error.constructor.name : typeof error
       });
-      alert(`❌ Error: ${error.message}`);
+      alert(`❌ Error: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setProcessingPDF(false);
     }
