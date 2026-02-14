@@ -46,3 +46,4 @@ See [`MIGRATION_GUIDE.md`](./MIGRATION_GUIDE.md) for detailed deployment instruc
 - **Student**: view 6‑week *Study Plan*; (later: take quiz, upload mock).
 
 > Replace stubs with services for: AI RAG answers, video edit/transcript, OCR, auto‑grading, and messaging.
+
