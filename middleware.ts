@@ -34,9 +34,10 @@ const roleRoutes = {
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   
-  // Allow public routes
-  const publicRoutes = ['/', '/login', '/register', '/api/auth/login', '/api/auth/register'];
-  if (publicRoutes.some(route => path === route)) {
+  // Allow public routes (including API routes used by public Ilmi thotbot)
+  const publicRoutes = ['/', '/login', '/register', '/api/auth/login', '/api/auth/register', '/api/ai', '/api/process-document'];
+  const publicPrefixes = ['/cognitive-assistant', '/learning-pathways'];
+  if (publicRoutes.some(route => path === route) || publicPrefixes.some(prefix => path === prefix || path.startsWith(prefix + '/'))) {
     return NextResponse.next();
   }
 
