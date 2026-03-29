@@ -3,6 +3,14 @@
 
 Aligned to the product brief (features & flows) — quick demo for academy owners.
 
+## Product, MVP & sprint planning
+
+Planning docs live in **[`docs/`](./docs/)** and show on GitHub with the repo:
+
+- **[`docs/PROJECT_AND_SPRINT_PLAN.md`](./docs/PROJECT_AND_SPRINT_PLAN.md)** — MVP definition, epic roadmap, detailed sprints (S0–S10), sprint log  
+- **[`docs/MVP_AND_BACKLOG.md`](./docs/MVP_AND_BACKLOG.md)** — User stories and checkboxes  
+- **[`docs/README.md`](./docs/README.md)** — Index of `docs/`
+
 ## 🚀 Migration from edprep-platform
 
 **Migrating to this codebase?** See:

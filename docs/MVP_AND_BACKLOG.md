@@ -4,7 +4,10 @@
 **Version:** MVP v1.0  
 **Last updated:** February 2026  
 
-This folder holds product and technical reference for the repo. The backlog below is the single source of truth for sprint planning.
+This folder holds product and technical reference for the repo.
+
+- **Sprint schedule & MVP project view:** see [**PROJECT_AND_SPRINT_PLAN.md**](./PROJECT_AND_SPRINT_PLAN.md) (epic order, Sprint 0–10, sprint log).
+- **Story checklist:** this file (`MVP_AND_BACKLOG.md`) — check off stories as you complete them.
 
 ---
 
