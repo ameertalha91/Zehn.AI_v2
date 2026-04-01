@@ -1,29 +1,14 @@
 /**
- * DATABASE SCHEMA - Core data models for the CSS AI MVP
- * 
- * This schema defines the database structure for the course management system.
- * It supports a multi-role system with students, tutors, and admins.
- * 
- * ARCHITECTURE OVERVIEW:
- * - User management with role-based access (STUDENT, TUTOR, ADMIN)
- * - Course system with centers, classes, and lectures
- * - Enrollment tracking and progress management
- * - Assignment and submission system
- * - Quiz and question management
- * 
+ * DATABASE SCHEMA - Zehn AI MVP
+ *
+ * Multi-role EdTech platform: Student, Instructor, ZehnAI super-user.
+ *
  * KEY RELATIONSHIPS:
- * - Users belong to Centers (for tutors/admins)
- * - Classes belong to Centers (instructor relationship)
- * - Students enroll in Classes through Enrollment
- * - Lectures belong to Classes
- * - Assignments and Quizzes belong to Classes
- * 
- * RELATED MODULES TO UNDERSTAND:
- * - /lib/db.ts - Database connection and Prisma client
- * - /app/api/courses/route.ts - Course API using these models
- * - /app/api/courses/[courseId]/enroll/route.ts - Enrollment API
- * - /lib/course-context.tsx - Frontend state management
- * - /data/learning-pathways.json - Alternative course content source
+ * - Users belong to Centers/institutes (instructors)
+ * - Students are PENDING_APPROVAL until an instructor approves them
+ * - Classes belong to Centers; students enroll via Enrollment
+ * - Assignments have FREE_TEXT or MCQ types; submissions are graded
+ * - StudyPlans are created by instructors (AI-drafted) and published to students
  */
 
 generator client {
@@ -36,18 +21,23 @@ datasource db {
 }
 
 // USER MANAGEMENT
-// Core user model with role-based access control
 model User {
-  id        String       @id @default(cuid())
-  email     String       @unique
-  name      String
-  password  String       // Hashed password
-  role      Role         // STUDENT, TUTOR, or ADMIN
-  centerId  String?      // For tutors/admins - which center they belong to
-  classes   Enrollment[] // Student enrollments
-  messages  Message[]    // Chat messages
-  createdAt DateTime     @default(now())
-  Center    Center?      @relation(fields: [centerId], references: [id])
+  id            String       @id @default(cuid())
+  email         String       @unique
+  name          String
+  password      String?      // Nullable — OAuth users may not have a password
+  role          Role
+  status        UserStatus   @default(PENDING_APPROVAL)
+  centerId      String?
+  image         String?      // Profile picture (OAuth)
+  googleId      String?      @unique
+  facebookId    String?      @unique
+  loginAttempts Int          @default(0)
+  lockedUntil   DateTime?
+  classes       Enrollment[]
+  messages      Message[]
+  createdAt     DateTime     @default(now())
+  Center        Center?      @relation(fields: [centerId], references: [id])
 }
 
 // CENTER MANAGEMENT
@@ -144,11 +134,16 @@ model Feedback {
 }
 
 model StudyPlan {
-  id        String   @id @default(cuid())
-  userId    String
-  weeks     Int
-  targets   String // JSON of tasks by week
-  createdAt DateTime @default(now())
+  id           String    @id @default(cuid())
+  studentId    String
+  instructorId String
+  classId      String?
+  content      String    // JSON: { milestones, focusAreas, resources }
+  aiDraft      Boolean   @default(false)
+  published    Boolean   @default(false)
+  publishedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 // CSS SYLLABUS MANAGEMENT
@@ -261,6 +256,14 @@ enum SubmissionStatus {
 
 enum Role {
   STUDENT
-  TUTOR
-  ADMIN
+  INSTRUCTOR    // MVP role — replaces TUTOR
+  ZEHNAI_ADMIN  // Platform super-user
+  TUTOR         // Legacy — maps to INSTRUCTOR
+  ADMIN         // Legacy — maps to ZEHNAI_ADMIN
+}
+
+enum UserStatus {
+  PENDING_APPROVAL  // Student registered, awaiting instructor approval
+  APPROVED          // Active — can access their portal
+  REJECTED          // Declined by instructor
 }

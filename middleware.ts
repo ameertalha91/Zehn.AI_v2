@@ -1,132 +1,106 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Define role-based route access
-const roleRoutes = {
-  student: [
-    '/student',
-    '/dashboard',
-    '/api/student',
-    '/api/assignments/submit',
-    '/api/courses/enroll',
-    '/api/study-plan',
-    '/cognitive-assistant',
-    '/chat'
-  ],
-  instructor: [
-    '/instructor',
-    '/educator-center',
-    '/api/instructor',
-    '/api/assignments/create',
-    '/api/assignments/grade',
-    '/api/courses/create',
-    '/api/courses/manage',
-    '/api/generate-quiz'
-  ],
-  admin: [
-    '/admin',
-    '/centers',
-    '/api/admin',
-    '/api/centers'
-  ]
-};
+// Routes accessible without authentication
+const PUBLIC_ROUTES = ['/', '/login', '/register', '/api/auth/login', '/api/auth/register', '/api/ai', '/api/process-document'];
+const PUBLIC_PREFIXES = ['/cognitive-assistant', '/learning-pathways'];
+
+// Routes that require APPROVED status for students
+const STUDENT_ROUTES = ['/student', '/dashboard', '/api/student', '/api/assignments/submit', '/api/courses/enroll', '/api/study-plan', '/chat'];
+const INSTRUCTOR_ROUTES = ['/instructor', '/educator-center', '/api/instructor', '/api/assignments/create', '/api/assignments/grade', '/api/courses/create', '/api/courses/manage', '/api/generate-quiz'];
+const ZEHNAI_ROUTES = ['/zehnai', '/admin', '/api/zehnai', '/api/admin'];
 
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
-  
-  // Allow public routes (including API routes used by public Ilmi thotbot)
-  const publicRoutes = ['/', '/login', '/register', '/api/auth/login', '/api/auth/register', '/api/ai', '/api/process-document'];
-  const publicPrefixes = ['/cognitive-assistant', '/learning-pathways'];
-  if (publicRoutes.some(route => path === route) || publicPrefixes.some(prefix => path === prefix || path.startsWith(prefix + '/'))) {
+
+  // Allow public routes
+  if (
+    PUBLIC_ROUTES.some(r => path === r) ||
+    PUBLIC_PREFIXES.some(p => path === p || path.startsWith(p + '/'))
+  ) {
     return NextResponse.next();
   }
 
-  // Get user from cookie/header (in production, verify JWT token)
+  // Allow status pages without full auth check
+  if (path === '/pending-approval' || path === '/account-rejected') {
+    return NextResponse.next();
+  }
+
   const userCookie = request.cookies.get('zehn_user');
   if (!userCookie) {
-    // Redirect to login if not authenticated
-    if (!path.startsWith('/api')) {
-      return NextResponse.redirect(new URL('/login', request.url));
+    if (path.startsWith('/api')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    return new NextResponse(
-      JSON.stringify({ error: 'Unauthorized' }),
-      { status: 401, headers: { 'content-type': 'application/json' } }
-    );
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   try {
     const user = JSON.parse(userCookie.value);
-    // For admin users, check if they're viewing as another role
-    const userRole = user.role === 'admin' && user.viewingAs 
-      ? user.viewingAs.toLowerCase() 
-      : user.role?.toLowerCase();
+    const role: string = (user.role ?? '').toUpperCase();
+    const status: string = user.status ?? 'PENDING_APPROVAL';
 
-    // Check if user has access to the requested route
-    const hasAccess = checkRouteAccess(path, userRole);
-    
-    if (!hasAccess) {
-      // Redirect to appropriate dashboard if trying to access unauthorized page
-      if (!path.startsWith('/api')) {
-        return NextResponse.redirect(new URL('/dashboard', request.url));
+    // Students who are not yet approved get redirected to their status page
+    if (role === 'STUDENT') {
+      if (status === 'PENDING_APPROVAL') {
+        if (path.startsWith('/api')) {
+          return NextResponse.json({ error: 'Account pending approval' }, { status: 403 });
+        }
+        return NextResponse.redirect(new URL('/pending-approval', request.url));
       }
-      return new NextResponse(
-        JSON.stringify({ error: 'Forbidden: Insufficient permissions' }),
-        { status: 403, headers: { 'content-type': 'application/json' } }
-      );
+      if (status === 'REJECTED') {
+        if (path.startsWith('/api')) {
+          return NextResponse.json({ error: 'Account access denied' }, { status: 403 });
+        }
+        return NextResponse.redirect(new URL('/account-rejected', request.url));
+      }
     }
 
-    // Add user role to headers for API routes
+    // Role-based route access
+    const hasAccess = checkRouteAccess(path, role);
+    if (!hasAccess) {
+      if (path.startsWith('/api')) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+      return NextResponse.redirect(new URL(getHomePath(role), request.url));
+    }
+
+    // Inject user context headers for API routes
     const response = NextResponse.next();
-    response.headers.set('x-user-role', userRole);
-    response.headers.set('x-user-id', user.id);
-    response.headers.set('x-is-admin', user.role === 'admin' ? 'true' : 'false');
-    response.headers.set('x-viewing-as', user.viewingAs || '');
+    response.headers.set('x-user-id', user.id ?? '');
+    response.headers.set('x-user-role', role);
+    response.headers.set('x-user-status', status);
+    response.headers.set('x-institute-id', user.centerId ?? '');
     return response;
 
-  } catch (error) {
-    console.error('Middleware error:', error);
+  } catch {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 }
 
 function checkRouteAccess(path: string, role: string): boolean {
-  // Admin has access to everything
-  if (role === 'admin') return true;
+  if (role === 'ZEHNAI_ADMIN' || role === 'ADMIN') return true;
 
-  // Check role-specific routes
-  if (role === 'student') {
-    // Block instructor and admin routes
-    const blockedPrefixes = ['/instructor', '/educator', '/admin', '/centers'];
-    const blockedAPIs = ['/api/instructor', '/api/admin', '/api/assignments/create', '/api/assignments/grade', '/api/courses/create'];
-    
-    if (blockedPrefixes.some(prefix => path.startsWith(prefix))) return false;
-    if (blockedAPIs.some(api => path.startsWith(api))) return false;
+  if (role === 'STUDENT') {
+    if (INSTRUCTOR_ROUTES.some(r => path.startsWith(r))) return false;
+    if (ZEHNAI_ROUTES.some(r => path.startsWith(r))) return false;
     return true;
   }
 
-  if (role === 'instructor' || role === 'tutor' || role === 'educator') {
-    // Block admin-only routes
-    const blockedPrefixes = ['/admin', '/centers'];
-    const blockedAPIs = ['/api/admin', '/api/centers'];
-    
-    if (blockedPrefixes.some(prefix => path.startsWith(prefix))) return false;
-    if (blockedAPIs.some(api => path.startsWith(api))) return false;
+  if (role === 'INSTRUCTOR' || role === 'TUTOR') {
+    if (ZEHNAI_ROUTES.some(r => path.startsWith(r))) return false;
+    if (STUDENT_ROUTES.some(r => path.startsWith(r))) return false;
     return true;
   }
 
-  // Default deny for unknown roles
   return false;
 }
 
+function getHomePath(role: string): string {
+  if (role === 'INSTRUCTOR' || role === 'TUTOR') return '/instructor';
+  if (role === 'ZEHNAI_ADMIN' || role === 'ADMIN') return '/admin';
+  return '/dashboard';
+}
+
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    '/((?!_next/static|_next/image|favicon.ico|public).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|public).*)'],
 };

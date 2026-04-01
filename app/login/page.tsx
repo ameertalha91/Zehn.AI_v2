@@ -1,134 +1,120 @@
-
 'use client';
+
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-import { useState } from 'react';
 import Link from 'next/link';
+import OAuthButtons from '@/components/OAuthButtons';
 
-export default function Login(){
+function getRedirectPath(role: string, status: string): string {
+  if (status === 'PENDING_APPROVAL') return '/pending-approval';
+  if (status === 'REJECTED') return '/account-rejected';
+  const r = role?.toUpperCase();
+  if (r === 'INSTRUCTOR' || r === 'TUTOR') return '/instructor';
+  if (r === 'ZEHNAI_ADMIN' || r === 'ADMIN') return '/admin';
+  return '/dashboard';
+}
+
+export default function LoginPage() {
   const router = useRouter();
   const { login, isAuthenticated, user } = useAuth();
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+  const [isLocked, setIsLocked] = useState(false);
 
-  // Redirect if already logged in
   if (isAuthenticated && user) {
-    router.push('/dashboard');
+    router.replace(getRedirectPath(user.role, user.status));
     return null;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
-
-    // Basic validation
-    if (!formData.email || !formData.password) {
-      setError('Please fill in all fields');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!formData.email.includes('@')) {
-      setError('Please enter a valid email address');
-      setIsLoading(false);
-      return;
-    }
-
-    const success = await login(formData.email, formData.password);
-    
-    if (success) {
-      router.push('/dashboard');
-    } else {
-      setError('Invalid email or password. Please try again.');
-    }
-    
-    setIsLoading(false);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLocked(false);
+    setIsLoading(true);
+
+    try {
+      const result = await login(formData.email, formData.password);
+
+      if (result && typeof result === 'object' && 'locked' in result) {
+        setIsLocked(true);
+        setError((result as { error: string }).error);
+        return;
+      }
+
+      if (result === true || result) {
+        // login() updates auth context — read role/status from there
+        // Redirect handled by the isAuthenticated guard above on next render
+        router.push('/dashboard');
+      } else {
+        setError('Invalid email or password.');
+      }
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Access your CSS preparation dashboard
-          </p>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
+      <div className="max-w-md w-full">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-900">Sign in</h1>
+          <p className="mt-1 text-sm text-gray-500">Welcome back to Zehn.AI</p>
         </div>
-        
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email Address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your email address"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your password"
-              />
-            </div>
+
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+            <input
+              id="email" name="email" type="email" required
+              value={formData.email} onChange={handleChange}
+              placeholder="you@example.com"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input
+              id="password" name="password" type="password" required
+              value={formData.password} onChange={handleChange}
+              placeholder="Your password"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+            />
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+            <div className={`px-3 py-2 rounded-lg text-sm border ${isLocked ? 'bg-orange-50 border-orange-200 text-orange-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
               {error}
             </div>
           )}
 
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? 'Signing in...' : 'Sign in'}
-            </button>
+          <button
+            type="submit" disabled={isLoading || isLocked}
+            className="w-full py-2.5 px-4 bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'Signing in…' : 'Sign in'}
+          </button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200" /></div>
+            <div className="relative flex justify-center text-xs text-gray-400 bg-white px-2">or</div>
           </div>
 
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Don&apos;t have an account?{' '}
-              <Link href="/register" className="font-medium text-teal-600 hover:text-teal-500">
-                Create one here
-              </Link>
-            </p>
-          </div>
+          <OAuthButtons callbackUrl="/dashboard" />
         </form>
+
+        <p className="text-center text-sm text-gray-500 mt-4">
+          Don&apos;t have an account?{' '}
+          <Link href="/register" className="font-medium text-gray-900 hover:underline">Create one</Link>
+        </p>
       </div>
     </div>
   );
