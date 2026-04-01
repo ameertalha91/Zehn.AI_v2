@@ -14,7 +14,7 @@ try {
   pdfParse = undefined;
 }
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const getOpenAI = () => new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // In-memory cache for sample questions
 let sampleQuestions: any[] = [];
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     console.log(`Found ${matchingQuestions.length} matching sample questions`);
 
     // Use sample questions to inform AI generation
-    const response = await openai.chat.completions.create({
+    const response = await getOpenAI().chat.completions.create({
       model: "gpt-4",
       messages: [
         {

@@ -5,7 +5,7 @@ import OpenAI from 'openai';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const getOpenAI = () => new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
@@ -55,7 +55,7 @@ async function generateQuestionsUsingAI(keywords: string[]) {
   try {
     const prompt = `Generate 3 multiple choice questions about ${keywords.join(', ')} for a CSS exam. Format as JSON with structure: [{id: string, question: string, options: string[], correct: number}]`;
     
-    const response = await openai.chat.completions.create({
+    const response = await getOpenAI().chat.completions.create({
       model: "gpt-4",
       messages: [
         {
