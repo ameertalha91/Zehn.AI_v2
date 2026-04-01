@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { verifyAuth, hasRole } from '@/lib/api-auth';
 import { emitCourseUpdated, emitCourseDeleted } from '@/lib/course-sync';
+export const dynamic = 'force-dynamic';
 
 /**
  * INDIVIDUAL COURSE API - Detailed course data for management interfaces

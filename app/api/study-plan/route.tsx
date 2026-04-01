@@ -35,6 +35,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { verifyAuth } from '@/lib/api-auth';
 import { pakistanAffairsSyllabus, getAllTopicsFlat, getTopicsByPriority } from '@/lib/syllabus/pakistan-affairs';
+export const dynamic = 'force-dynamic';
 
 // TYPE DEFINITIONS - API Response Interfaces
 // These mirror the frontend interfaces but include additional server-side fields

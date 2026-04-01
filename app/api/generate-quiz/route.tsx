@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import fs from 'fs';
 import path from 'path';
+export const dynamic = 'force-dynamic';
 
 // Fix the pdf-parse import - use the same method that works in process-document
 let pdfParse: ((data: Buffer) => Promise<{ text: string }>) | undefined;

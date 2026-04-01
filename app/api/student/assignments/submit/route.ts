@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import { verifyAuth, hasRole, createAuthResponse } from '@/lib/api-auth';
 import { z } from 'zod';
+export const dynamic = 'force-dynamic';
 
 const submitSchema = z.object({
   assignmentId: z.string(),

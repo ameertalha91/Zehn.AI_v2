@@ -1,5 +1,6 @@
 
 import { db } from '@/lib/db';
+export const dynamic = 'force-dynamic';
 export async function GET(){ const items = await db.quiz.findMany({ orderBy:{createdAt:'desc'} }); return Response.json({items}); }
 export async function POST(req:Request){
   const { title } = await req.json();

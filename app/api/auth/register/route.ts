@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db';
 import { z } from 'zod';
+export const dynamic = 'force-dynamic';
 
 // Only STUDENT and INSTRUCTOR can self-register.
 // ZEHNAI_ADMIN accounts are created by platform operators directly.

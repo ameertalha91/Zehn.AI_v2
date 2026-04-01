@@ -26,6 +26,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { verifyAuth, hasRole } from '@/lib/api-auth';
 import { emitEnrollmentChanged } from '@/lib/course-sync';
+export const dynamic = 'force-dynamic';
 
 // POST: Enroll a student in a course
 export async function POST(req: NextRequest, { params }: { params: { courseId: string } }) {

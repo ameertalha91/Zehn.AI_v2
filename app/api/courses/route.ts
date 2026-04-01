@@ -41,6 +41,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { verifyAuth, hasRole } from '@/lib/api-auth';
 import { emitCourseCreated } from '@/lib/course-sync';
+export const dynamic = 'force-dynamic';
 
 /**
  * DATABASE UTILITY FUNCTIONS

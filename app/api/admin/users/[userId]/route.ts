@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAuth, hasRole } from '@/lib/api-auth';
 import { prisma } from '@/lib/db';
+export const dynamic = 'force-dynamic';
 
 // GET - Fetch specific user details
 export async function GET(
