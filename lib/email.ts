@@ -1,6 +1,11 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialized lazily so missing env vars don't crash the build
+function getResend() {
+  if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY is not set');
+  return new Resend(process.env.RESEND_API_KEY);
+}
+
 const FROM = process.env.EMAIL_FROM ?? 'Zehn.AI <noreply@zehn.ai>';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://zehn.ai';
 
@@ -11,7 +16,7 @@ export async function sendApprovalEmail(params: {
 }) {
   const loginUrl = `${APP_URL}/login`;
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: params.studentEmail,
     subject: 'Your Zehn.AI account has been approved',
@@ -40,7 +45,7 @@ export async function sendRejectionEmail(params: {
   studentName: string;
   reason?: string;
 }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: params.studentEmail,
     subject: 'Update on your Zehn.AI application',
